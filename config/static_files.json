@@ -27,6 +27,10 @@
         "content_type": "text/javascript",
         "filename": "public/js/Scenes/Game.js"
     },
+    "/js/scenes/gui": {
+        "content_type": "text/javascript",
+        "filename": "public/js/Scenes/GUI.js"
+    },
 
 
 

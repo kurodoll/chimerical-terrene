@@ -4,7 +4,9 @@ from . import WorldManager
 
 
 class Manager:
-    def __init__(self):
+    def __init__(self, sio):
+        self.sio = sio
+
         self.config = {
             'files': {
                 'static_files': 'config/static_files.json'
@@ -14,9 +16,11 @@ class Manager:
             }
         }
 
-        self.EntityManager = EntityManager.EntityManager()
+        self.EntityManager = EntityManager.EntityManager(self)
         self.ComponentManager = ComponentManager.ComponentManager()
         self.WorldManager = WorldManager.WorldManager(self)
+
+        self.monitors = {}
 
     # Creates a new player character entity based on initial details.
     def newCharacter(self, details):
@@ -34,3 +38,11 @@ class Manager:
         character.addComponent(self.WorldManager.getDefaultPositionComp())
 
         return character
+
+    # Set up a monitor for some data in the game, that will be sent to the
+    # specified client whenever the data is changed.
+    def addMonitor(self, for_data, sid):
+        if for_data in self.monitors:
+            self.monitors[for_data].append(sid)
+        else:
+            self.monitors[for_data] = [sid]

@@ -11,14 +11,13 @@ import socketio
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #                                                                     Game Init
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-GameManager = Manager.Manager()
+sio = socketio.Server()
+GameManager = Manager.Manager(sio)
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #                                                                Socket.io Init
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-sio = socketio.Server()
-
 # Load static files that are to be served to clients.
 try:
     static_files = json.load(open(GameManager.config['files']['static_files']))
@@ -110,7 +109,17 @@ def get_present_level(sid):
     on_level = character.getComp('position').get('on_level')
     level = GameManager.WorldManager.getLevel(on_level)
 
-    sio.emit('present level', level)
+    sio.emit('present level', level, room=sid)
+
+
+# User sent a console command.
+@sio.on('console command')
+def console_command(sid, command_str):
+    command = command_str.split(' ')
+
+    if len(command) == 2:
+        if command[0] == 'monitor':
+            GameManager.addMonitor(command[1], sid)
 
 
 # TODO: Clean up user account and character stuff on disconnect.

@@ -3,6 +3,14 @@ from colorama import init, Fore, Style
 
 init()  # colorama
 
+Manager = None
+last_msgs = []
+
+
+def logSetVars(Manager_):
+    global Manager
+    Manager = Manager_
+
 
 def log(caller, message, level='log'):
     # Print the current date & time.
@@ -27,3 +35,21 @@ def log(caller, message, level='log'):
 
     # Print the caller and the message.
     print(f'{caller}{Style.RESET_ALL}] {message}')
+
+    # Keep a record of recent messages.
+    msg = str(now) + ' (' + level + ') [' + caller + '] ' + message
+
+    last_msgs.append(msg)
+    if len(last_msgs) > 10:
+        last_msgs.pop(0)
+
+    # Distribute log data to monitoring clients.
+    if Manager:
+        if 'log' in Manager.monitors:
+            for sid in Manager.monitors['log']:
+                Manager.sio.emit('monitor update', {
+                    'monitor': 'log',
+                    'data': {
+                        'history': last_msgs
+                    }
+                }, room=sid)

@@ -83,7 +83,8 @@ class SceneGUI extends Phaser.Scene {
         this.monitor_output.text = JSON.stringify(this.monitor_data, null, 4)
             .replace(/{/g, '')
             .replace(/}/g, '')
-            .replace(/"/g, '');
+            .replace(/"/g, '')
+            .replace(/,/g, '');
     }
 
     // Used for forwarding special keypresses from elsewhere.

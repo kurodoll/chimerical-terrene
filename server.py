@@ -1,4 +1,5 @@
 from log import log
+from log import logSetVars
 from Game import Manager
 
 import json
@@ -12,7 +13,9 @@ import socketio
 #                                                                     Game Init
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 sio = socketio.Server()
+
 GameManager = Manager.Manager(sio)
+logSetVars(GameManager)
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

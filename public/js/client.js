@@ -8,7 +8,7 @@ $(() => {
         type: Phaser.AUTO,
         width: window.innerWidth,
         height: window.innerHeight,
-        scene: [ SceneLogin ],
+        scene: [ SceneLogin, SceneCharacterSelect ],
         render: {
             'pixelArt': true // Don't blur when small images are enlarged.
         }
@@ -16,6 +16,14 @@ $(() => {
 
     const game = new Phaser.Game(phaser_config);
     game.scene.start('login');
+
+
+    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    //                                                       Server Interaction
+    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    socket.on('logged in', () => {
+        game.scene.switch('login', 'character_select');
+    });
 
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

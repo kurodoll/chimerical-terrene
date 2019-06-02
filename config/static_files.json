@@ -19,6 +19,10 @@
         "content_type": "text/javascript",
         "filename": "public/js/Scenes/Login.js"
     },
+    "/js/scenes/character_select": {
+        "content_type": "text/javascript",
+        "filename": "public/js/Scenes/CharacterSelect.js"
+    },
 
 
 

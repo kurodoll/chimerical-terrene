@@ -40,20 +40,41 @@ app = socketio.WSGIApp(sio, static_files=static_files)
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #                                                            Client Interaction
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+clients = {}
+
+
 @sio.on('connect')
 def connect(sid, env):
     log('server.py', f'Connected: {sid}', 'debug (network)')
 
+    clients[sid] = {
+        'online': True,
+        'logged_in': False
+    }
+
 
 # User is logging in.
+# TODO: Actually handle user accounts.
+# TODO: Prevent abuse via multiple logins and stuff. A user could login to the
+#       same user from 2 different locations atm.
 @sio.on('login')
 def login(sid, details):
+    if (clients[sid]['logged_in']):
+        return
+
     log('server.py', f'Login from {details["username"]}', 'debug (network)')
 
+    clients[sid]['logged_in'] = True
+    clients[sid]['username'] = details['username']
 
+    sio.emit('logged in', room=sid)
+
+
+# TODO: Clean up user account and character stuff on disconnect.
 @sio.on('disconnect')
 def disconnect(sid):
     log('server.py', f'Disconnected: {sid}', 'debug (network)')
+    clients[sid]['online'] = False
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

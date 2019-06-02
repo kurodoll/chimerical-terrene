@@ -45,6 +45,12 @@ def connect(sid, env):
     log('server.py', f'Connected: {sid}', 'debug (network)')
 
 
+# User is logging in.
+@sio.on('login')
+def login(sid, details):
+    log('server.py', f'Login from {details["username"]}', 'debug (network)')
+
+
 @sio.on('disconnect')
 def disconnect(sid):
     log('server.py', f'Disconnected: {sid}', 'debug (network)')

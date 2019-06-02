@@ -227,5 +227,21 @@ class SceneLogin extends Phaser.Scene {
                 this.password.text = this.password.text.slice(0, -1);
             }
         }
+
+        // If the user pressed tab, move them to the next input field.
+        else if (e.keyCode == 9) {
+            if (this.active_element == 'username') {
+                this.username_label.setStyle({ color: '#888888' });
+                this.password_label.setStyle({ color: '#FFFFFF' });
+
+                this.active_element = 'password';
+            }
+            else if (this.active_element == 'password') {
+                this.username_label.setStyle({ color: '#FFFFFF' });
+                this.password_label.setStyle({ color: '#888888' });
+
+                this.active_element = 'username';
+            }
+        }
     }
 }

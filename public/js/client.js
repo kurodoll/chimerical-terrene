@@ -32,7 +32,7 @@ $(() => {
     // If the user presses backspace, don't go back in the browser history.
     // Instead, forward the keypress to the current scene.
     $(document).on('keydown', (e) => {
-        if (e.keyCode == 8) {
+        if (e.keyCode == 8 || e.keyCode == 9) {
             e.preventDefault();
 
             if (game.scene.isActive('login')) {

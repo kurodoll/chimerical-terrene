@@ -8,7 +8,7 @@ $(() => {
         type: Phaser.AUTO,
         width: window.innerWidth,
         height: window.innerHeight,
-        scene: [ SceneLogin, SceneCharacterSelect ],
+        scene: [ SceneLogin, SceneCharacterSelect, SceneGame ],
         render: {
             'pixelArt': true // Don't blur when small images are enlarged.
         }
@@ -25,6 +25,10 @@ $(() => {
         game.scene.switch('login', 'character_select');
     });
 
+    socket.on('character initialized', () => {
+        game.scene.switch('character_select', 'game');
+    });
+
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //                                                             jQuery Stuff
@@ -37,6 +41,9 @@ $(() => {
 
             if (game.scene.isActive('login')) {
                 game.scene.getScene('login').keypress(e);
+            }
+            else if (game.scene.isActive('character_select')) {
+                game.scene.getScene('character_select').keypress(e);
             }
         }
     });

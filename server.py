@@ -49,7 +49,8 @@ def connect(sid, env):
 
     clients[sid] = {
         'online': True,
-        'logged_in': False
+        'logged_in': False,
+        'characters': {}
     }
 
 
@@ -59,7 +60,7 @@ def connect(sid, env):
 #       same user from 2 different locations atm.
 @sio.on('login')
 def login(sid, details):
-    if (clients[sid]['logged_in']):
+    if clients[sid]['logged_in']:
         return
 
     # Give user the name ANONYMOUS if they didn't enter a username.
@@ -72,6 +73,30 @@ def login(sid, details):
     clients[sid]['username'] = details['username']
 
     sio.emit('logged in', room=sid)
+
+
+@sio.on('character selected')
+def character_selected(sid, details):
+    if not clients[sid]['logged_in']:
+        return
+
+    # Give character the name ANONYMOUS if user didn't enter a name.
+    if (details['name'] == ''):
+        details['name'] = 'ANONYMOUS'
+
+    if details['name'] in clients[sid]['characters']:
+        pass  # TODO: Implement this.
+    else:
+        log(
+            'server.py',
+            f'{clients[sid]["username"]} made new character {details["name"]}',
+            'debug'
+        )
+
+        character = GameManager.newCharacter(details)
+        clients[sid]['characters'][details['name']] = character
+
+        sio.emit('character initialized', room=sid)
 
 
 # TODO: Clean up user account and character stuff on disconnect.

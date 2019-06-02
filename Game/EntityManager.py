@@ -1,3 +1,4 @@
+from log import log
 from . import Entity
 
 
@@ -5,6 +6,7 @@ from . import Entity
 class EntityManager:
     def __init__(self):
         self.entities = {}
+        log('EntityManager', 'Initialized.')
 
     # Creates a blank new entity and returns it.
     def new(self):

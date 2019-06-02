@@ -19,3 +19,7 @@ class Component:
         self.data = data
 
         log(f'Component#{self.id}', f'Created (type {self.type}).', 'debug')
+
+    def get(self, data_name):
+        if data_name in self.data:
+            return self.data[data_name]

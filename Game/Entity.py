@@ -29,3 +29,7 @@ class Entity:
             f'Component of type {component.type} added.',
             'debug'
         )
+
+    def getComp(self, type_):
+        if type_ in self.components:
+            return self.components[type_]

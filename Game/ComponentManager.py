@@ -1,3 +1,4 @@
+from log import log
 from . import Component
 
 
@@ -5,6 +6,7 @@ from . import Component
 class ComponentManager:
     def __init__(self):
         self.components = {}
+        log('ComponentManager', 'Initialized.')
 
     # Creates a new component of a type and returns it.
     # The default details of the component type will be loaded from file, but

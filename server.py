@@ -95,8 +95,22 @@ def character_selected(sid, details):
 
         character = GameManager.newCharacter(details)
         clients[sid]['characters'][details['name']] = character
+        clients[sid]['using_character'] = details['name']
 
         sio.emit('character initialized', room=sid)
+
+
+# User wants the data of the level that their character is currently on.
+@sio.on('get present level')
+def get_present_level(sid):
+    if not clients[sid]['online']:
+        return
+
+    character = clients[sid]['characters'][clients[sid]['using_character']]
+    on_level = character.getComp('position').get('on_level')
+    level = GameManager.WorldManager.getLevel(on_level)
+
+    sio.emit('present level', level)
 
 
 # TODO: Clean up user account and character stuff on disconnect.

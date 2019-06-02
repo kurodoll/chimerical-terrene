@@ -27,6 +27,11 @@ $(() => {
 
     socket.on('character initialized', () => {
         game.scene.switch('character_select', 'game');
+        socket.emit('get present level');
+    });
+
+    socket.on('present level', (level) => {
+        console.log(level);
     });
 
 

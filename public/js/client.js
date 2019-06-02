@@ -38,6 +38,7 @@ $(() => {
 
     socket.on('monitor update', (update) => {
         console.log(new Date($.now()) + '\nMonitor Update (' + update.monitor + '):', update.data);
+        game.scene.getScene('gui').monitorUpdate(update);
     });
 
 

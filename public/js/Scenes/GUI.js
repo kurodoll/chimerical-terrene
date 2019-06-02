@@ -15,6 +15,8 @@ class SceneGUI extends Phaser.Scene {
         for (let i = 65; i <= 90; i++) { // Characters a-z & A-Z
             this.valid_keys.push(i);
         }
+
+        this.monitor_data = {};
     }
 
     create() {
@@ -29,6 +31,15 @@ class SceneGUI extends Phaser.Scene {
                 fontFamily: 'Consolas',
                 fontSize: 11,
                 color: '#000000'
+            }
+        );
+
+        // Monitor output.
+        this.monitor_output = this.add.text(
+            10, 30, '', {
+                fontFamily: 'Calibri',
+                fontSize: 10,
+                color: '#FFFFFF'
             }
         );
 
@@ -63,6 +74,16 @@ class SceneGUI extends Phaser.Scene {
                 }
             }
         });
+    }
+
+    monitorUpdate(data) {
+        this.monitor_data[data.monitor] = data.data;
+
+        // Make the output look good and display it on-screen.
+        this.monitor_output.text = JSON.stringify(this.monitor_data, null, 4)
+            .replace(/{/g, '')
+            .replace(/}/g, '')
+            .replace(/"/g, '');
     }
 
     // Used for forwarding special keypresses from elsewhere.

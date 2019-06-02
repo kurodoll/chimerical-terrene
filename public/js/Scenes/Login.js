@@ -2,6 +2,12 @@
 class SceneLogin extends Phaser.Scene {
     constructor() {
         super({ key: 'login' });
+
+        this.default_font = {
+            fontFamily: 'Calibri',
+            fontSize: 13,
+            color: '#FFFFFF'
+        };
     }
 
     preload() {
@@ -62,6 +68,41 @@ class SceneLogin extends Phaser.Scene {
                         getEnd: () => 1
                     }
                 });
+            }
+        });
+
+        // Render the login prompt.
+        this.login_background = this.add.graphics();
+        this.login_background.fillStyle(0x000000, 0.5);
+        this.login_background.fillRoundedRect(100, 180, 300, 60, 10);
+
+        this.username_label = this.add.text(120, 193, 'Username:', this.default_font);
+        this.password_label = this.add.text(120, 213, 'Password:', this.default_font);
+
+        // Render the login button.
+        this.login_button = this.add.graphics();
+        this.login_button.fillStyle(0x000000, 0.5);
+        this.login_button.fillRoundedRect(410, 180, 200, 60, 10);
+
+        this.login_label = this.add.text(
+            450, 190,
+            'LOGIN',
+            {
+                fontFamily: 'Times New Roman',
+                fontSize: 40,
+                color: '#BBBBBB'
+            }
+        ).setShadow(0, 0, "#000000", 5, false, true);
+
+        // Fade in the login prompt text elements.
+        this.add.tween({
+            targets: [ this.username_label, this.password_label, this.login_label ],
+            ease: 'Sine.easeInOut',
+            duration: 3000,
+            delay: 0,
+            alpha: {
+                getStart: () => 0,
+                getEnd: () => 1
             }
         });
     }

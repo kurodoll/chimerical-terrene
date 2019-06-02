@@ -62,6 +62,10 @@ def login(sid, details):
     if (clients[sid]['logged_in']):
         return
 
+    # Give user the name ANONYMOUS if they didn't enter a username.
+    if (details['username'] == ''):
+        details['username'] = 'ANONYMOUS'
+
     log('server.py', f'Login from {details["username"]}', 'debug (network)')
 
     clients[sid]['logged_in'] = True

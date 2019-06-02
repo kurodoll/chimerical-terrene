@@ -116,6 +116,7 @@ def get_present_level(sid):
 
 
 # User sent a console command.
+# TODO: Only allow admins to send console commands.
 @sio.on('console command')
 def console_command(sid, command_str):
     command = command_str.split(' ')

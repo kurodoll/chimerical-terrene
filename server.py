@@ -38,6 +38,19 @@ app = socketio.WSGIApp(sio, static_files=static_files)
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#                                                            Client Interaction
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+@sio.on('connect')
+def connect(sid, env):
+    log('server.py', f'Connected: {sid}', 'debug (network)')
+
+
+@sio.on('disconnect')
+def disconnect(sid):
+    log('server.py', f'Disconnected: {sid}', 'debug (network)')
+
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #                                                                          Main
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 if __name__ == '__main__':

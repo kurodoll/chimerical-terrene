@@ -43,6 +43,7 @@ class Manager:
     # specified client whenever the data is changed.
     def addMonitor(self, for_data, sid):
         if for_data in self.monitors:
-            self.monitors[for_data].append(sid)
+            if sid not in self.monitors[for_data]:
+                self.monitors[for_data].append(sid)
         else:
             self.monitors[for_data] = [sid]

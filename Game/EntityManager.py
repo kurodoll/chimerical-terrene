@@ -48,3 +48,8 @@ class EntityManager:
 
     def delete(self, entity_id):
         del self.entities[entity_id]
+
+        for l in self.Manager.WorldManager.levels:
+            self.Manager.WorldManager.levels[l].delEntity(entity_id)
+
+        log('EntityManager', f'Deleted entity#{entity_id}', 'debug')

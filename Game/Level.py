@@ -143,6 +143,12 @@ class Level:
     def addEntity(self, entity):
         self.entities.append(entity)
 
+    def delEntity(self, entity_id):
+        for i in range(0, len(self.entities)):
+            if self.entities[i].id == entity_id:
+                del self.entities[i]
+                return
+
     def getTilesAsJSON(self):
         tiles = []
 

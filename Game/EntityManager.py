@@ -32,6 +32,11 @@ class EntityManager:
         if entity_id not in self.changed:
             self.changed.append(entity_id)
 
+    def markDeleted(self, entity_id):
+        if entity_id in self.entities:
+            self.entities[entity_id].markDeleted()
+            self.markChanged(entity_id)
+
     def get(self, entity_id):
         return self.entities[entity_id]
 
@@ -40,3 +45,6 @@ class EntityManager:
 
     def resetChanged(self):
         self.changed = []
+
+    def delete(self, entity_id):
+        del self.entities[entity_id]

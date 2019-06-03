@@ -16,6 +16,7 @@ class Entity:
     def __init__(self):
         self.id = nextID()
         self.components = {}
+        self.deleted = False
 
         log(f'Entity#{self.id}', 'Created.', 'debug')
 
@@ -45,5 +46,9 @@ class Entity:
     def toJSON(self):
         return {
             'id': self.id,
-            'components': self.getCompsAsJSON()
+            'components': self.getCompsAsJSON(),
+            'deleted': self.deleted
         }
+
+    def markDeleted(self):
+        self.deleted = True

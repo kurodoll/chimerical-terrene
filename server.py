@@ -144,6 +144,10 @@ def disconnect(sid):
     log('server.py', f'Disconnected: {sid}', 'debug (network)')
     clients[sid]['online'] = False
 
+    if 'using_character' in clients[sid]:
+        character = clients[sid]['characters'][clients[sid]['using_character']]
+        GameManager.EntityManager.markDeleted(character.id)
+
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #                                                                       Threads

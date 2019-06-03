@@ -152,16 +152,26 @@ class SceneGame extends Phaser.Scene {
         let exists = false;
 
         for (let i = 0; i < this.level.entities.length; i++) {
-            if (entity.id == this.level.entities[i].id) {
+            if (this.level.entities[i] && entity.id == this.level.entities[i].id) {
                 exists = true;
 
-                if (this.level.entities[i].image) {
-                    const image = this.level.entities[i].image;
-                    this.level.entities[i] = entity;
-                    this.level.entities[i].image = image;
+                // Check if the entity is being deleted.
+                if (entity.deleted) {
+                    if (this.level.entities[i].image) {
+                        this.level.entities[i].image.destroy();
+                    }
+
+                    this.level.entities.splice(i, 1);
                 }
                 else {
-                    this.level.entities[i] = entity;
+                    if (this.level.entities[i].image) {
+                        const image = this.level.entities[i].image;
+                        this.level.entities[i] = entity;
+                        this.level.entities[i].image = image;
+                    }
+                    else {
+                        this.level.entities[i] = entity;
+                    }
                 }
 
                 break;

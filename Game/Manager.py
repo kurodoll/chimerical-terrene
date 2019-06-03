@@ -106,6 +106,9 @@ class Manager:
                     for sid in self.links[level_id]:
                         self.sio.emit('entity update', ent.toJSON(), room=sid)
 
+            if ent.deleted:
+                self.EntityManager.delete(c)
+
     # Creates a new player character entity based on initial details.
     def newCharacter(self, details, sid):
         character = self.EntityManager.new()
@@ -142,6 +145,7 @@ class Manager:
             }
         ))
 
+        self.EntityManager.markChanged(character.id)
         return character
 
     # Set up a monitor for some data in the game, that will be sent to the

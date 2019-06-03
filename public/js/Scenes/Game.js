@@ -91,26 +91,20 @@ class SceneGame extends Phaser.Scene {
                 const pos_y = ent.components.position.data.y * this.level.tile_height;
 
                 if (ent.image) {
-                    ent.image.x = pos_x;
-                    ent.image.y = pos_y;
-
-                    if (ent.image.old_x && ent.image.old_y) {
-                        this.add.tween({
+                    // Only update the sprite if it has moved.
+                    if (pos_x != ent.image.x || pos_y != ent.image.y) {
+                        ent.image.tween = this.add.tween({
                             targets: [ ent.image ],
                             ease: 'Sine.easeInOut',
                             duration: 100,
                             delay: 0,
                             x: {
-                                getStart: () => ent.image.old_x,
+                                getStart: () => ent.image.x,
                                 getEnd: () => pos_x
                             },
                             y: {
-                                getStart: () => ent.image.old_y,
+                                getStart: () => ent.image.y,
                                 getEnd: () => pos_y
-                            },
-                            onComplete: () => {
-                                ent.image.old_x = pos_x;
-                                ent.image.old_y = pos_y;
                             }
                         });
                     }
@@ -141,15 +135,9 @@ class SceneGame extends Phaser.Scene {
                 exists = true;
 
                 if (this.level.entities[i].image) {
-                    const old_x = this.level.entities[i].image.x;
-                    const old_y = this.level.entities[i].image.y;
-
-                    const image = this.level.entities[i].image; 
+                    const image = this.level.entities[i].image;
                     this.level.entities[i] = entity;
                     this.level.entities[i].image = image;
-
-                    this.level.entities[i].image.old_x = old_x;
-                    this.level.entities[i].image.old_y = old_y;
                 }
                 else {
                     this.level.entities[i] = entity;

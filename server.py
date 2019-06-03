@@ -150,7 +150,7 @@ def disconnect(sid):
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 def processTicks():
     while True:
-        GameManager.processNextAction()
+        GameManager.processActions()
         GameManager.emitUpdates()
 
         sio.sleep(0.01)

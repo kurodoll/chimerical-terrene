@@ -34,8 +34,8 @@ class Manager:
         })
 
     # Process the next action in the queue.
-    def processNextAction(self):
-        if len(self.action_queue):
+    def processActions(self):
+        while len(self.action_queue):
             action = self.action_queue.pop(0)
 
             if action['type'] == 'move':

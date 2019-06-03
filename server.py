@@ -74,7 +74,7 @@ def login(sid, details):
     clients[sid]['logged_in'] = True
     clients[sid]['username'] = details['username']
 
-    sio.emit('logged in', room=sid)
+    sio.emit('logged in', sid, room=sid)
 
 
 @sio.on('character selected')
@@ -95,7 +95,7 @@ def character_selected(sid, details):
             'debug'
         )
 
-        character = GameManager.newCharacter(details)
+        character = GameManager.newCharacter(details, sid)
         clients[sid]['characters'][details['name']] = character
         clients[sid]['using_character'] = details['name']
 

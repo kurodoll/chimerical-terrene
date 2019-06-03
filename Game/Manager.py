@@ -24,7 +24,7 @@ class Manager:
         self.monitors = {}
 
     # Creates a new player character entity based on initial details.
-    def newCharacter(self, details):
+    def newCharacter(self, details, sid):
         character = self.EntityManager.new()
 
         # Give the entity the character's name.
@@ -47,6 +47,15 @@ class Manager:
             'sprite',
             {
                 'sprite': 'player'
+            }
+        ))
+
+        # Mark the entity as controlled by the user.
+        character.addComponent(self.ComponentManager.new(
+            character,
+            'user_controlled',
+            {
+                'owner': sid
             }
         ))
 

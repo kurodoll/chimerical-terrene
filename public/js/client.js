@@ -1,4 +1,5 @@
 const socket = io.connect();
+let client_sid;
 
 $(() => {
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -22,8 +23,9 @@ $(() => {
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //                                                       Server Interaction
     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    socket.on('logged in', () => {
+    socket.on('logged in', (sid) => {
         game.scene.switch('login', 'character_select');
+        client_sid = sid;
     });
 
     socket.on('character initialized', () => {

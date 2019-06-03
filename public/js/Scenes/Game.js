@@ -63,22 +63,27 @@ class SceneGame extends Phaser.Scene {
     renderSprites() {
         for (let i = 0; i < this.level.entities.length; i++) {
             if ('sprite' in this.level.entities[i].components) {
-                const pos_x = this.level.entities[i].components.position.data.x * this.level.tile_width;
-                const pos_y = this.level.entities[i].components.position.data.y * this.level.tile_height;
+                const ent = this.level.entities[i];
 
-                if (this.level.entities[i].image) {
-                    this.level.entities[i].image.x = pos_x;
-                    this.level.entities[i].image.y = pos_y;
+                const pos_x = ent.components.position.data.x * this.level.tile_width;
+                const pos_y = ent.components.position.data.y * this.level.tile_height;
+
+                if (ent.image) {
+                    ent.image.x = pos_x;
+                    ent.image.y = pos_y;
                 }
                 else {
-                    this.level.entities[i].image =
+                    ent.image =
                         this.add.sprite(
                             pos_x,
                             pos_y,
-                            this.level.entities[i].components.sprite.data.sprite
+                            ent.components.sprite.data.sprite
                         ).setOrigin(0, 0);
 
-                    //this.cameras.main.startFollow(this.level.entities[i].image, true, 0.09, 0.09);
+                    // If this sprite is the player character of this client, have the camera follow it.
+                    if (ent.components.user_controlled && ent.components.user_controlled.data.owner == client_sid) {
+                        this.cameras.main.startFollow(ent.image, true, 0.09, 0.09);
+                    }
                 }
             }
         }

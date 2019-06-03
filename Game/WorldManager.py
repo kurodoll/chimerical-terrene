@@ -26,6 +26,11 @@ class WorldManager:
                 'warning'
             )
 
+        self.valid_movements = [
+            'ground', 'ground_rough',
+            'grass'
+        ]
+
         log('WorldManager', 'Initialized.')
 
     def addEntityToLevel(self, entity, level_id):
@@ -70,6 +75,23 @@ class WorldManager:
 
             self.levels[id_] = Level.Level(level_data)
             return self.levels[id_]
+
+    # Checks whether a tile can be moved to.
+    def validMove(self, level_id, coords):
+        x = coords['x']
+        y = coords['y']
+        w = self.levels[level_id].width
+        h = self.levels[level_id].height
+
+        if x < 0 or y < 0 or x >= w or y >= h:
+            return False
+
+        tile = self.levels[level_id].tiles[y * w + x]
+
+        if tile.type in self.valid_movements:
+            return True
+
+        return False
 
     def getLevelJSON(self, level_id):
         return self.getLevel(level_id).getAsJSON()

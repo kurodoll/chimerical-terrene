@@ -49,6 +49,9 @@ class Manager:
                     dir_ = action['details']['dir']
                     pos = entity.getComp('position')
 
+                    old_x = pos.get('x')
+                    old_y = pos.get('y')
+
                     if dir_ == '1':
                         pos.setValue('x', pos.get('x') - 1)
                         pos.setValue('y', pos.get('y') + 1)
@@ -70,7 +73,14 @@ class Manager:
                         pos.setValue('x', pos.get('x') + 1)
                         pos.setValue('y', pos.get('y') - 1)
 
-                    self.EntityManager.markChanged(entity.id)
+                    if not self.WorldManager.validMove(pos.get('on_level'), {
+                        'x': pos.get('x'),
+                        'y': pos.get('y')
+                    }):
+                        pos.setValue('x', old_x)
+                        pos.setValue('y', old_y)
+                    else:
+                        self.EntityManager.markChanged(entity.id)
 
     # Link a client to a level, meaning they will be sent any changes made to
     # the level.

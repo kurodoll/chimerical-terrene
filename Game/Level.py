@@ -93,6 +93,17 @@ class Level:
                     if self.tiles[cur_y * self.width + cur_x].type == 'empty':
                         break
 
+            # Place walls around the ground area.
+            for x in range(0, self.width):
+                for y in range(0, self.height):
+                    if self.tiles[y * self.width + x].type == 'empty':
+                        adjacent = self.getAdjacentTiles(x, y)
+
+                        for adj in adjacent:
+                            if adj.type != 'empty' and adj.type != 'wall':
+                                self.tiles[y * self.width + x].setType('wall')
+                                break
+
             # Place a spawn point somewhere.
             spawn_tile_index = random.randint(0, len(open_tiles) - 1)
             spawn_tile = open_tiles[spawn_tile_index]
@@ -102,6 +113,30 @@ class Level:
             }
 
             self.tiles[spawn_tile['y'] * self.width + spawn_tile['x']].addAttribute('spawn_tile')  # noqa
+
+    def getAdjacentTiles(self, x, y):
+        adjacent = []
+        coords = [
+            {'x': x - 1, 'y': y - 1},
+            {'x': x, 'y': y - 1},
+            {'x': x + 1, 'y': y - 1},
+
+            {'x': x - 1, 'y': y},
+            {'x': x + 1, 'y': y},
+
+            {'x': x - 1, 'y': y + 1},
+            {'x': x, 'y': y + 1},
+            {'x': x + 1, 'y': y + 1},
+        ]
+
+        for c in coords:
+            try:
+                tile = self.tiles[c['y'] * self.width + c['x']]
+                adjacent.append(tile)
+            except IndexError:
+                pass
+
+        return adjacent
 
     def getTilesAsJSON(self):
         tiles = []

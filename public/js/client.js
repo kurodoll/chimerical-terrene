@@ -33,7 +33,7 @@ $(() => {
     });
 
     socket.on('present level', (level) => {
-        console.log(level);
+        game.scene.getScene('game').setLevel(level);
     });
 
     socket.on('monitor update', (update) => {

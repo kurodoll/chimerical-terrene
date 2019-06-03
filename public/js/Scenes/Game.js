@@ -87,6 +87,13 @@ class SceneGame extends Phaser.Scene {
             if ('sprite' in this.level.entities[i].components) {
                 const ent = this.level.entities[i];
 
+                if (ent.components.user_controlled && ent.components.user_controlled.data.owner == client_sid) {
+                    this.determineSight({
+                        x: ent.components.position.data.x,
+                        y: ent.components.position.data.y
+                    });
+                }
+
                 const pos_x = ent.components.position.data.x * this.level.tile_width;
                 const pos_y = ent.components.position.data.y * this.level.tile_height;
 
@@ -123,6 +130,20 @@ class SceneGame extends Phaser.Scene {
                         this.cameras.main.startFollow(ent.image, true, 0.09, 0.09);
                     }
                 }
+            }
+        }
+    }
+
+    // Determines which tiles are visible and which are not.
+    determineSight(from_pos) {
+        for (let x = 0; x < this.level.width; x++) {
+            for (let y = 0; y < this.level.height; y++) {
+                const distance = Math.sqrt(
+                    Math.pow(Math.abs(x - from_pos.x), 2) + Math.pow(Math.abs(y - from_pos.y), 2)
+                );
+
+                const brightness = 1 / (distance / 5);
+                this.layer.getTileAt(x, y).setAlpha(brightness);
             }
         }
     }

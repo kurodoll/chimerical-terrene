@@ -11,6 +11,28 @@ class SceneGame extends Phaser.Scene {
         this.load.image('player', '/graphics/sprites/player');
     }
 
+    create() {
+        // Set up inputs.
+        const movement_keys = [ '1', '2', '3', '4', '6', '7', '8', '9' ];
+
+        this.input.keyboard.on('keydown', (e) => {
+            // Actions that require you be controlling an entity.
+            if (this.controlling_entity) {
+                // Movement.
+                if (movement_keys.indexOf(e.key) > -1) {
+                    socket.emit(
+                        'action',
+                        'move',
+                        {
+                            'entity': this.controlling_entity.id,
+                            'dir': e.key
+                        }
+                    );
+                }
+            }
+        });
+    }
+
     setLevel(level) {
         this.level = level;
 
@@ -82,6 +104,7 @@ class SceneGame extends Phaser.Scene {
 
                     // If this sprite is the player character of this client, have the camera follow it.
                     if (ent.components.user_controlled && ent.components.user_controlled.data.owner == client_sid) {
+                        this.controlling_entity = ent;
                         this.cameras.main.startFollow(ent.image, true, 0.09, 0.09);
                     }
                 }

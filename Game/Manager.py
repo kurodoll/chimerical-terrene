@@ -21,7 +21,53 @@ class Manager:
         self.ComponentManager = ComponentManager.ComponentManager(self)
         self.WorldManager = WorldManager.WorldManager(self)
 
+        self.action_queue = []
         self.monitors = {}
+
+    # Adds an action to the queue of changes to the world to be processed.
+    def queueAction(self, sid, type_, details):
+        self.action_queue.append({
+            'sid': sid,
+            'type': type_,
+            'details': details
+        })
+
+    # Process the next action in the queue.
+    def processNextAction(self):
+        if len(self.action_queue):
+            action = self.action_queue.pop(0)
+
+            if action['type'] == 'move':
+                # Get the entity that is trying to be moved.
+                entity = self.EntityManager.get(action['details']['entity'])
+
+                # Ensure that the entity is user controllable by the action
+                # taker.
+                if entity.getComp('user_controlled') and entity.getComp('user_controlled').get('owner') == action['sid']:  # noqa
+                    # Get the direction and try to move the entity.
+                    dir_ = action['details']['dir']
+                    pos = entity.getComp('position')
+
+                    if dir_ == '1':
+                        pos.setValue('x', pos.get('x') - 1)
+                        pos.setValue('y', pos.get('y') + 1)
+                    elif dir_ == '2':
+                        pos.setValue('y', pos.get('y') + 1)
+                    elif dir_ == '3':
+                        pos.setValue('x', pos.get('x') + 1)
+                        pos.setValue('y', pos.get('y') + 1)
+                    elif dir_ == '4':
+                        pos.setValue('x', pos.get('x') - 1)
+                    elif dir_ == '6':
+                        pos.setValue('x', pos.get('x') + 1)
+                    elif dir_ == '7':
+                        pos.setValue('x', pos.get('x') - 1)
+                        pos.setValue('y', pos.get('y') - 1)
+                    elif dir_ == '8':
+                        pos.setValue('y', pos.get('y') - 1)
+                    elif dir_ == '9':
+                        pos.setValue('x', pos.get('x') + 1)
+                        pos.setValue('y', pos.get('y') - 1)
 
     # Creates a new player character entity based on initial details.
     def newCharacter(self, details, sid):

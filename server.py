@@ -115,6 +115,15 @@ def get_present_level(sid):
     sio.emit('present level', level, room=sid)
 
 
+# User has played an action.
+@sio.on('action')
+def action(sid, type_, details):
+    if not clients[sid]['online']:
+        return
+
+    GameManager.queueAction(sid, type_, details)
+
+
 # User sent a console command.
 # TODO: Only allow admins to send console commands.
 @sio.on('console command')
@@ -134,6 +143,15 @@ def disconnect(sid):
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#                                                                       Threads
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+def processActionQueue():
+    while True:
+        GameManager.processNextAction()
+        sio.sleep(0.01)
+
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #                                                                          Main
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 if __name__ == '__main__':
@@ -142,6 +160,9 @@ if __name__ == '__main__':
     # Check whether a port has been specified as an envvar (e.g. for Heroku).
     if 'PORT' in os.environ.keys():
         port = int(os.environ['PORT'])
+
+    # Start threads.
+    sio.start_background_task(processActionQueue)
 
     # Start the server.
     log('server.py', f'Starting server on port {port}.')

@@ -25,3 +25,6 @@ class EntityManager:
                 }, room=sid)
 
         return entity
+
+    def get(self, entity_id):
+        return self.entities[entity_id]

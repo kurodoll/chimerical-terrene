@@ -21,6 +21,9 @@ class Component:
 
         log(f'Component#{self.id}', f'Created (type {self.type}).', 'debug')
 
+    def setValue(self, data_name, value):
+        self.data[data_name] = value
+
     def get(self, data_name):
         if data_name in self.data:
             return self.data[data_name]

@@ -6,7 +6,7 @@ class SceneGUI extends Phaser.Scene {
         this.active_element = '';
 
         // Create a list of characters that are valid for text input.
-        this.valid_keys = [ 32 ]; // 32 = Space
+        this.valid_keys = [ 32, 59 ]; // 32 = Space, 59 = ;
 
         for (let i = 48; i <= 57; i++) { // Numbers 0-9 & their symbols
             this.valid_keys.push(i);
@@ -59,7 +59,7 @@ class SceneGUI extends Phaser.Scene {
             else {
                 if (this.active_element == 'console') {
                     // Check whether the pressed key is valid.
-                    if (this.valid_keys.indexOf(key.keyCode) > -1) {
+                    if (this.valid_keys.indexOf(key.keyCode) > -1 || key.key == '_') {
                         this.console_command.text += key.key;
                     }
 
@@ -77,6 +77,11 @@ class SceneGUI extends Phaser.Scene {
     }
 
     monitorUpdate(data) {
+        // If we're sent level data, we want to hide all the tile data.
+        if (data.data.tiles) {
+            delete data.data.tiles;
+        }
+
         this.monitor_data[data.monitor] = data.data;
 
         // Make the output look good and display it on-screen.

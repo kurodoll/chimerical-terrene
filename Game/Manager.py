@@ -9,7 +9,8 @@ class Manager:
 
         self.config = {
             'files': {
-                'static_files': 'config/static_files.json'
+                'static_files': 'config/static_files.json',
+                'defined_levels': 'Game/data/world/defined_levels.json'
             },
             'server': {
                 'default_port': 3000
@@ -47,3 +48,10 @@ class Manager:
                 self.monitors[for_data].append(sid)
         else:
             self.monitors[for_data] = [sid]
+
+        # Emit initial data.
+        if for_data.split(':')[0] == 'level':
+            self.sio.emit('monitor update', {
+                'monitor': for_data,
+                'data': self.WorldManager.getLevelJSON(for_data.split(':')[1])
+            }, room=sid)

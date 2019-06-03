@@ -110,7 +110,7 @@ def get_present_level(sid):
 
     character = clients[sid]['characters'][clients[sid]['using_character']]
     on_level = character.getComp('position').get('on_level')
-    level = GameManager.WorldManager.getLevel(on_level)
+    level = GameManager.WorldManager.getLevelJSON(on_level)
 
     sio.emit('present level', level, room=sid)
 

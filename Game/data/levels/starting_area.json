@@ -1,0 +1,19 @@
+{
+    "id": "starting_area",
+    "name": "Starting Area",
+
+    "width": 50,
+    "height": 50,
+
+    "tile_width": 15,
+    "tile_height": 15,
+    "zoom": 2,
+
+    "tileset": "cave",
+    "generator": "cave",
+    "tile_weights": {
+        "ground": 60,
+        "ground_rough": 80,
+        "grass": 100
+    }
+}

@@ -1,0 +1,133 @@
+from log import log
+from . import Tile
+
+import random
+
+
+class Level:
+    def __init__(self, level_data):
+        log(f'Level:{level_data["id"]}', f'Creating level.', 'debug')
+
+        self.id = level_data['id']
+        self.name = level_data['name']
+
+        self.width = level_data['width']
+        self.height = level_data['height']
+
+        self.tile_width = level_data['tile_width']
+        self.tile_height = level_data['tile_height']
+        self.zoom = level_data['zoom']
+
+        self.tileset = level_data['tileset']
+
+        # If the level has a generator field, the level itself needs to be
+        # procedurally generated.
+        if 'generator' in level_data and 'tile_weights' in level_data:
+            self.generateLevel(
+                level_data['generator'],
+                level_data['tile_weights']
+            )
+
+        log(f'Level:{self.id}', f'Loaded level.')
+
+    def generateLevel(self, generator, tile_weights):
+        log(
+            f'Level:{self.id}',
+            f'Generating level of type [{generator}].',
+            'debug'
+        )
+
+        if generator == 'cave':
+            tiles_n = self.width * self.height
+            tiles_fill_n = int(tiles_n / 3)  # Number of tiles to place
+
+            # Start walk in the center of the level area.
+            cur_x = int(self.width / 2)
+            cur_y = int(self.height / 2)
+
+            # Keep track of open/walkable tiles.
+            open_tiles = []
+
+            # Create an empty level.
+            self.tiles = []
+            for i in range(0, tiles_n):
+                self.tiles.append(Tile.Tile('empty'))
+
+            # Use a random walk algorithm to create a random floor plan.
+            for i in range(0, tiles_fill_n):
+                # Choose a tile type to place.
+                tile_prob = random.randint(1, 100)
+
+                for t in tile_weights:
+                    if tile_prob <= tile_weights[t]:
+                        tile_type = t
+                        break
+
+                tile_index = int(cur_y * self.width + cur_x)
+                self.tiles[tile_index].setType(tile_type)
+
+                open_tiles.append({
+                    'x': cur_x,
+                    'y': cur_y
+                })
+
+                # Move the "cursor" randomly until a new spot to place a tile
+                # is found.
+                while True:
+                    if random.random() > 0.5:
+                        if random.random() > 0.5:
+                            cur_x += 1
+                        else:
+                            cur_x -= 1
+                    else:
+                        if random.random() > 0.5:
+                            cur_y += 1
+                        else:
+                            cur_y -= 1
+
+                    if cur_x < 0 or cur_x >= self.width or cur_y < 0 or cur_y >= self.height:  # noqa
+                        cur_x = int(self.width / 2)
+                        cur_y = int(self.height / 2)
+
+                    # If we're on an empty tile, break from the loop.
+                    if self.tiles[cur_y * self.width + cur_x].type == 'empty':
+                        break
+
+            # Place a spawn point somewhere.
+            spawn_tile_index = random.randint(0, len(open_tiles) - 1)
+            spawn_tile = open_tiles[spawn_tile_index]
+
+            self.elements = {
+                'spawn_tile': spawn_tile
+            }
+
+            self.tiles[spawn_tile['y'] * self.width + spawn_tile['x']].addAttribute('spawn_tile')  # noqa
+
+    def getTilesAsJSON(self):
+        tiles = []
+
+        for t in self.tiles:
+            tiles.append({
+                'type': t.type,
+                'attributes': t.attributes
+            })
+
+        return tiles
+
+    def getAsJSON(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+
+            'width': self.width,
+            'height': self.height,
+
+            'tile_width': self.tile_width,
+            'tile_height': self.tile_height,
+            'zoom': self.zoom,
+
+            'tileset': self.tileset,
+
+            'tiles': self.getTilesAsJSON(),
+            'elements': self.elements
+        }

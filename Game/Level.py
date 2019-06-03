@@ -87,7 +87,7 @@ class Level:
                         else:
                             cur_y -= 1
 
-                    if cur_x < 0 or cur_x >= self.width or cur_y < 0 or cur_y >= self.height:  # noqa
+                    if cur_x < 1 or cur_x >= self.width - 1 or cur_y < 1 or cur_y >= self.height - 1:  # noqa
                         cur_x = int(self.width / 2)
                         cur_y = int(self.height / 2)
 

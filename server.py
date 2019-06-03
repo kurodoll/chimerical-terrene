@@ -114,6 +114,9 @@ def get_present_level(sid):
 
     sio.emit('present level', level, room=sid)
 
+    # Link the client to the level, so that they recieve updates to the level.
+    GameManager.link(sid, on_level)
+
 
 # User has played an action.
 @sio.on('action')
@@ -145,9 +148,11 @@ def disconnect(sid):
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #                                                                       Threads
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-def processActionQueue():
+def processTicks():
     while True:
         GameManager.processNextAction()
+        GameManager.emitUpdates()
+
         sio.sleep(0.01)
 
 
@@ -162,7 +167,7 @@ if __name__ == '__main__':
         port = int(os.environ['PORT'])
 
     # Start threads.
-    sio.start_background_task(processActionQueue)
+    sio.start_background_task(processTicks)
 
     # Start the server.
     log('server.py', f'Starting server on port {port}.')

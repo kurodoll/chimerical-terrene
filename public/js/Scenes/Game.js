@@ -93,6 +93,27 @@ class SceneGame extends Phaser.Scene {
                 if (ent.image) {
                     ent.image.x = pos_x;
                     ent.image.y = pos_y;
+
+                    if (ent.image.old_x && ent.image.old_y) {
+                        this.add.tween({
+                            targets: [ ent.image ],
+                            ease: 'Sine.easeInOut',
+                            duration: 100,
+                            delay: 0,
+                            x: {
+                                getStart: () => ent.image.old_x,
+                                getEnd: () => pos_x
+                            },
+                            y: {
+                                getStart: () => ent.image.old_y,
+                                getEnd: () => pos_y
+                            },
+                            onComplete: () => {
+                                ent.image.old_x = pos_x;
+                                ent.image.old_y = pos_y;
+                            }
+                        });
+                    }
                 }
                 else {
                     ent.image =
@@ -110,5 +131,38 @@ class SceneGame extends Phaser.Scene {
                 }
             }
         }
+    }
+
+    entityUpdate(entity) {
+        let exists = false;
+
+        for (let i = 0; i < this.level.entities.length; i++) {
+            if (entity.id == this.level.entities[i].id) {
+                exists = true;
+
+                if (this.level.entities[i].image) {
+                    const old_x = this.level.entities[i].image.x;
+                    const old_y = this.level.entities[i].image.y;
+
+                    const image = this.level.entities[i].image; 
+                    this.level.entities[i] = entity;
+                    this.level.entities[i].image = image;
+
+                    this.level.entities[i].image.old_x = old_x;
+                    this.level.entities[i].image.old_y = old_y;
+                }
+                else {
+                    this.level.entities[i] = entity;
+                }
+
+                break;
+            }
+        }
+
+        if (!exists) {
+            this.level.entities.push(entity);
+        }
+
+        this.renderSprites();
     }
 }

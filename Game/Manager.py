@@ -22,6 +22,7 @@ class Manager:
         self.WorldManager = WorldManager.WorldManager(self)
 
         self.action_queue = []
+        self.links = {}
         self.monitors = {}
 
     # Adds an action to the queue of changes to the world to be processed.
@@ -68,6 +69,32 @@ class Manager:
                     elif dir_ == '9':
                         pos.setValue('x', pos.get('x') + 1)
                         pos.setValue('y', pos.get('y') - 1)
+
+                    self.EntityManager.markChanged(entity.id)
+
+    # Link a client to a level, meaning they will be sent any changes made to
+    # the level.
+    def link(self, sid, level_id):
+        if level_id in self.links:
+            self.links[level_id].append(sid)
+        else:
+            self.links[level_id] = [sid]
+
+    # Send out all entity changes to clients.
+    def emitUpdates(self):
+        changes = self.EntityManager.getChanged()
+        self.EntityManager.resetChanged()
+
+        for c in changes:
+            ent = self.EntityManager.get(c)
+            pos = ent.getComp('position')
+
+            if pos:
+                level_id = pos.get('on_level')
+
+                if level_id in self.links:
+                    for sid in self.links[level_id]:
+                        self.sio.emit('entity update', ent.toJSON(), room=sid)
 
     # Creates a new player character entity based on initial details.
     def newCharacter(self, details, sid):

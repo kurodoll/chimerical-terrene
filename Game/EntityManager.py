@@ -7,6 +7,7 @@ class EntityManager:
     def __init__(self, Manager):
         self.Manager = Manager
         self.entities = {}
+        self.changed = []
 
         log('EntityManager', 'Initialized.')
 
@@ -26,5 +27,16 @@ class EntityManager:
 
         return entity
 
+    # Marks an entity as changed.
+    def markChanged(self, entity_id):
+        if entity_id not in self.changed:
+            self.changed.append(entity_id)
+
     def get(self, entity_id):
         return self.entities[entity_id]
+
+    def getChanged(self):
+        return self.changed
+
+    def resetChanged(self):
+        self.changed = []

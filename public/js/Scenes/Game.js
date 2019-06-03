@@ -144,8 +144,109 @@ class SceneGame extends Phaser.Scene {
 
                 const brightness = 1 / (distance / 5);
                 this.layer.getTileAt(x, y).setAlpha(brightness);
+
+                // Reset the tint of the tile.
+                this.layer.getTileAt(x, y).tint = 0xFFFFFF;
+
+                // Get a list of tiles that exist between the two points.
+                const tiles = this.getTilesOnLine(from_pos, { x: x, y: y });
+
+                // Whether this tile has been declared hidden from view.
+                let tile_hidden = false;
+
+                // Check if any of the tiles between the two points block view.
+                for (let i = 0; i < tiles.length; i++) {
+                    const index = tiles[i].y * this.level.width + tiles[i].x;
+
+                    // Ensure that the tile is within the level.
+                    // Since the LOS algorithm rounds, it can get values
+                    // outside of the bounds of the level.
+                    if (!this.level.tiles[index]) {
+                        continue;
+                    }
+
+                    // If this tile is blocked, either hide or tint it.
+                    if (this.level.tiles[index].type == 'wall') {
+                        // We just tint the tile blue if we've seen it before.
+                        if (this.level.tiles[y * this.level.width + x].known) {
+                            this.layer.getTileAt(x, y).tint = 0xFF8800;
+                        }
+                        else {
+                            this.layer.getTileAt(x, y).tint = 0x000000;
+                        }
+
+                        tile_hidden = true;
+                        break;
+                    }
+                }
+
+                // If the tile wasn't hidden, mark it as known.
+                if (!tile_hidden) {
+                    this.level.tiles[y * this.level.width + x].known = true;
+                }
             }
         }
+    }
+
+    // Returns a list of tiles that intersect a line from point A to B.
+    getTilesOnLine(from, to) {
+        let tiles = [];
+        let x0, x1, y0, y1;
+
+        // This is so that walls show up.
+        if (from.x < to.x) { to.x -= 1; }
+        if (from.x > to.x) { to.x += 1; }
+
+        if (from.y < to.y) { to.y -= 1; }
+        if (from.y > to.y) { to.y += 1; }
+
+        // Make sure the "from" x is smaller than the "to" x.
+        if (from.x > to.x) {
+            x0 = to.x;
+            y0 = to.y;
+            x1 = from.x;
+            y1 = from.y;
+        }
+        else {
+            x0 = from.x;
+            y0 = from.y;
+            x1 = to.x;
+            y1 = to.y;
+        }
+
+        const dx = Math.abs(x0 - x1); // Distance between x points
+        const dy = Math.abs(y0 - y1); // Distance between y points
+        const sy = y1 > y0 ? 1 : -1; // The slope of y
+
+        // Determines how many points are checked for intersection.
+        const delta = 0.1;
+
+        let x = x0;
+        let y = y0;
+
+        if (dx > dy) {
+            const cy = dy / dx;
+
+            for (; x < x1; x += delta) {
+                y += cy * sy * delta;
+                tiles.push({ x: Math.round(x), y: Math.round(y) });
+            }
+        }
+        else {
+            const cx = dx / dy;
+
+            while (true) {
+                y += sy * delta;
+                x += cx * delta;
+                tiles.push({ x: Math.round(x), y: Math.round(y) });
+
+                if ((sy == 1 && y >= y1) || (sy == -1 && y <= y1)) {
+                    break;
+                }
+            }
+        }
+
+        return tiles;
     }
 
     entityUpdate(entity) {

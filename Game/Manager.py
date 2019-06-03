@@ -18,7 +18,7 @@ class Manager:
         }
 
         self.EntityManager = EntityManager.EntityManager(self)
-        self.ComponentManager = ComponentManager.ComponentManager()
+        self.ComponentManager = ComponentManager.ComponentManager(self)
         self.WorldManager = WorldManager.WorldManager(self)
 
         self.monitors = {}
@@ -29,6 +29,7 @@ class Manager:
 
         # Give the entity the character's name.
         character.addComponent(self.ComponentManager.new(
+            character,
             'name',
             {
                 'name': details['name']
@@ -36,7 +37,18 @@ class Manager:
         ))
 
         # Initialize the entity at the starting area.
-        character.addComponent(self.WorldManager.getDefaultPositionComp())
+        character.addComponent(
+            self.WorldManager.getDefaultPositionComp(character)
+        )
+
+        # Give the entity a sprite.
+        character.addComponent(self.ComponentManager.new(
+            character,
+            'sprite',
+            {
+                'sprite': 'player'
+            }
+        ))
 
         return character
 

@@ -13,8 +13,9 @@ def nextID():
 
 
 class Component:
-    def __init__(self, type_, data):
+    def __init__(self, parent, type_, data):
         self.id = nextID()
+        self.parent = parent
         self.type = type_
         self.data = data
 
@@ -23,3 +24,9 @@ class Component:
     def get(self, data_name):
         if data_name in self.data:
             return self.data[data_name]
+
+    def toJSON(self):
+        return {
+            'id': self.id,
+            'data': self.data
+        }

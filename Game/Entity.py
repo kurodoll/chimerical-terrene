@@ -33,3 +33,17 @@ class Entity:
     def getComp(self, type_):
         if type_ in self.components:
             return self.components[type_]
+
+    def getCompsAsJSON(self):
+        comps = {}
+
+        for c in self.components:
+            comps[c] = self.components[c].toJSON()
+
+        return comps
+
+    def toJSON(self):
+        return {
+            'id': self.id,
+            'components': self.getCompsAsJSON()
+        }

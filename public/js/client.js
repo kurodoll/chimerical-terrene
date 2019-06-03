@@ -15,7 +15,8 @@ $(() => {
     };
 
     const game = new Phaser.Game(phaser_config);
-    game.scene.start('login');
+    game.scene.start('game'); // Hack to preload data correctly
+    game.scene.switch('game', 'login');
 
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

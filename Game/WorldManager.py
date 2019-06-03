@@ -28,13 +28,23 @@ class WorldManager:
 
         log('WorldManager', 'Initialized.')
 
+    def addEntityToLevel(self, entity, level_id):
+        level = self.getLevel(level_id)
+        level.addEntity(entity)
+
     # Returns a position component set to the default starting area of the
     # game.
-    def getDefaultPositionComp(self):
-        return self.Manager.ComponentManager.new('position', {
-            'on_level': 'starting_area',
-            'x': 0,
-            'y': 0
+    def getDefaultPositionComp(self, entity):
+        default_level = 'starting_area'
+        level = self.getLevel(default_level)
+
+        default_x = level.elements['spawn_tile']['x']
+        default_y = level.elements['spawn_tile']['y']
+
+        return self.Manager.ComponentManager.new(entity, 'position', {
+            'on_level': default_level,
+            'x': default_x,
+            'y': default_y
         })
 
     def getLevel(self, id_):

@@ -7,6 +7,8 @@ class SceneGame extends Phaser.Scene {
     preload() {
         this.load.image('tileset cave', '/graphics/tilesets/cave');
         this.load.json('tileset cave data', '/data/tilesets/cave');
+
+        this.load.image('player', '/graphics/sprites/player');
     }
 
     setLevel(level) {
@@ -54,5 +56,31 @@ class SceneGame extends Phaser.Scene {
         );
 
         this.cameras.main.setZoom(level.zoom);
+
+        this.renderSprites();
+    }
+
+    renderSprites() {
+        for (let i = 0; i < this.level.entities.length; i++) {
+            if ('sprite' in this.level.entities[i].components) {
+                const pos_x = this.level.entities[i].components.position.data.x * this.level.tile_width;
+                const pos_y = this.level.entities[i].components.position.data.y * this.level.tile_height;
+
+                if (this.level.entities[i].image) {
+                    this.level.entities[i].image.x = pos_x;
+                    this.level.entities[i].image.y = pos_y;
+                }
+                else {
+                    this.level.entities[i].image =
+                        this.add.sprite(
+                            pos_x,
+                            pos_y,
+                            this.level.entities[i].components.sprite.data.sprite
+                        ).setOrigin(0, 0);
+
+                    //this.cameras.main.startFollow(this.level.entities[i].image, true, 0.09, 0.09);
+                }
+            }
+        }
     }
 }

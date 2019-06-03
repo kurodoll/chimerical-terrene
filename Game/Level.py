@@ -20,6 +20,8 @@ class Level:
 
         self.tileset = level_data['tileset']
 
+        self.entities = []
+
         # If the level has a generator field, the level itself needs to be
         # procedurally generated.
         if 'generator' in level_data and 'tile_weights' in level_data:
@@ -138,6 +140,9 @@ class Level:
 
         return adjacent
 
+    def addEntity(self, entity):
+        self.entities.append(entity)
+
     def getTilesAsJSON(self):
         tiles = []
 
@@ -148,6 +153,14 @@ class Level:
             })
 
         return tiles
+
+    def getEntitiesAsJSON(self):
+        entities = []
+
+        for e in self.entities:
+            entities.append(e.toJSON())
+
+        return entities
 
     def getAsJSON(self):
         return {
@@ -164,5 +177,6 @@ class Level:
             'tileset': self.tileset,
 
             'tiles': self.getTilesAsJSON(),
-            'elements': self.elements
+            'elements': self.elements,
+            'entities': self.getEntitiesAsJSON()
         }

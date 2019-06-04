@@ -213,6 +213,7 @@ class SceneGame extends Phaser.Scene {
     }
 
     // Returns a list of tiles that intersect a line from point A to B.
+    // TODO: Fix so that sight is equal from point A to B and vice versa.
     getTilesOnLine(from, to) {
         let tiles = [];
         let x0, x1, y0, y1;

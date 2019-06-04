@@ -269,6 +269,8 @@ class Manager:
             character,
             'stats',
             {
+                'level': 1,
+                'xp': 0,
                 'health': 10,
                 'health_max': 10,
                 'strength': 3

@@ -12,6 +12,9 @@ class InteractionManager:
         if attacker.deleted:
             return
 
+        attacker_sid = attacker.getComp('type').get('sid')
+        defender_sid = defender.getComp('type').get('sid')
+
         # Set up combat flags.
         if not attacker.combat_status['in_combat']:
             attacker.combat_status['in_combat'] = True
@@ -49,10 +52,23 @@ class InteractionManager:
 
             self.Manager.EntityManager.markDeleted(defender.id)
 
-        # Emit details.
-        attacker_sid = attacker.getComp('type').get('sid')
-        defender_sid = defender.getComp('type').get('sid')
+            # Handle drops.
+            if defender.getComp('drops'):
+                xp = defender.getComp('drops').get('xp')
+                if xp:
+                    current_xp = attacker.getComp('stats').get('xp')
+                    attacker.getComp('stats').setValue('xp', current_xp + xp)
 
+                    self.Manager.sio.emit(
+                        'damage',
+                        {
+                            'type': 'xp',
+                            'amount': xp
+                        },
+                        room=attacker_sid
+                    )
+
+        # Emit details.
         if attacker.getComp('type').get('type') == 'player':
             self.Manager.sio.emit(
                 'combat update',

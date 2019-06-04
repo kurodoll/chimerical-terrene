@@ -43,6 +43,9 @@
                 "movement": "random",
                 "aggression": "passive-aggressive",
                 "attacks_mobs": false
+            },
+            "drops": {
+                "xp": 1
             }
         }
     }

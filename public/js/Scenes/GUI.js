@@ -32,17 +32,38 @@ class SceneGUI extends Phaser.Scene {
             }
         );
         this.health_label = this.add.text(
-            100, ch - 20, 'Hit Points', {
+            130, ch - 20, 'Hit Points', {
                 fontFamily: 'Verdana',
                 fontSize: 10,
                 color: '#FF4444'
             }
         );
         this.health = this.add.text(
-            100, ch - 50, '', {
+            130, ch - 50, '', {
                 fontFamily: 'Verdana',
                 fontSize: 25,
                 color: '#FF8888'
+            }
+        );
+        this.xp_label = this.add.text(
+            280, ch - 20, 'EXP', {
+                fontFamily: 'Verdana',
+                fontSize: 10,
+                color: '#44CCFF'
+            }
+        );
+        this.xp = this.add.text(
+            280, ch - 50, '', {
+                fontFamily: 'Verdana',
+                fontSize: 25,
+                color: '#88FFFF'
+            }
+        );
+        this.level = this.add.text(
+            280, ch - 60, '', {
+                fontFamily: 'Verdana',
+                fontSize: 10,
+                color: '#44CCFF'
             }
         );
 
@@ -118,8 +139,10 @@ class SceneGUI extends Phaser.Scene {
     }
 
     setPlayerStats(details) {
-        this.health.text = details.data.health + '/' + details.data.health_max;
         this.strength.text = 'Str ' + details.data.strength;
+        this.health.text = details.data.health + '/' + details.data.health_max;
+        this.xp.text = details.data.xp + '/';
+        this.level.text = 'LEVEL ' + details.data.level;
     }
 
     setCombatDetails(details, level) {
@@ -158,17 +181,13 @@ class SceneGUI extends Phaser.Scene {
                     fontSize: 20,
                     color: '#FFCC88'
                 }
-            ).setOrigin(0.5);
+            ).setOrigin(0.5).setShadow(0, 0, "#000000", 3, false, true);
 
             this.add.tween({
                 targets: [ damage_given ],
                 ease: 'Sine.easeInOut',
                 duration: 1000,
                 delay: 0,
-                x: {
-                    getStart: () => cw / 2,
-                    getEnd: () => cw / 2
-                },
                 y: {
                     getStart: () => ch / 2,
                     getEnd: () => ch / 2 - 100
@@ -185,23 +204,48 @@ class SceneGUI extends Phaser.Scene {
                     fontSize: 20,
                     color: '#FF0000'
                 }
-            ).setOrigin(0.5);
+            ).setOrigin(0.5).setShadow(0, 0, "#000000", 3, false, true);
 
             this.add.tween({
                 targets: [ damage_taken ],
                 ease: 'Sine.easeInOut',
                 duration: 1000,
                 delay: 0,
-                x: {
-                    getStart: () => cw / 2,
-                    getEnd: () => cw / 2
-                },
                 y: {
                     getStart: () => ch / 2,
                     getEnd: () => ch / 2 + 100
                 },
                 onComplete: () => {
                     damage_taken.destroy();
+                }
+            });
+        }
+        else if (details.type == 'xp') {
+            const xp_gained = this.add.text(
+                cw / 2 + 30, ch / 2,
+                'EXP +' + details.amount,
+                {
+                    fontFamily: 'Verdana',
+                    fontSize: 10,
+                    color: '#44CCFF'
+                }
+            ).setShadow(0, 0, "#88FFFF", 3, false, true);
+
+            this.add.tween({
+                targets: [ xp_gained ],
+                ease: 'Sine.easeInOut',
+                duration: 4000,
+                delay: 0,
+                y: {
+                    getStart: () => ch / 2,
+                    getEnd: () => ch / 2 - 50
+                },
+                alpha: {
+                    getStart: () => 1,
+                    getEnd: () => 0
+                },
+                onComplete: () => {
+                    xp_gained.destroy();
                 }
             });
         }

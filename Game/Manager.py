@@ -236,7 +236,8 @@ class Manager:
             character,
             'type',
             {
-                'type': 'player'
+                'type': 'player',
+                'sid': sid
             }
         ))
 

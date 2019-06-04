@@ -106,14 +106,12 @@ class SceneGame extends Phaser.Scene {
     }
 
     renderSprites() {
-        let player_ent;
-
         for (let i = 0; i < this.level.entities.length; i++) {
             if ('sprite' in this.level.entities[i].components) {
                 const ent = this.level.entities[i];
 
                 if (ent.components.user_controlled && ent.components.user_controlled.data.owner == client_sid) {
-                    player_ent = ent;
+                    this.player_ent = ent;
                 }
 
                 const pos_x = ent.components.position.data.x * this.level.tile_width;
@@ -151,12 +149,12 @@ class SceneGame extends Phaser.Scene {
 
         // Update LOS and camera for player.
         this.determineSight({
-            x: player_ent.components.position.data.x,
-            y: player_ent.components.position.data.y
+            x: this.player_ent.components.position.data.x,
+            y: this.player_ent.components.position.data.y
         });
 
-        this.controlling_entity = player_ent;
-        this.cameras.main.startFollow(player_ent.image, true, 0.09, 0.09);
+        this.controlling_entity = this.player_ent;
+        this.cameras.main.startFollow(this.player_ent.image, true, 0.09, 0.09);
     }
 
     // Determines which tiles are visible and which are not.
@@ -350,5 +348,13 @@ class SceneGame extends Phaser.Scene {
                 return;
             }
         }
+    }
+
+    getLevel() {
+        return this.level;
+    }
+
+    getPlayerEnt() {
+        return this.player_ent;
     }
 }

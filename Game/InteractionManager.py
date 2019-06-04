@@ -8,9 +8,14 @@ class InteractionManager:
         log('InteractionManager', 'Initialized.')
 
     def attack(self, attacker, defender):
+        if attacker.deleted:
+            return
+
         # Set up combat flags.
-        attacker.combat_status['in_combat'] = True
-        defender.combat_status['in_combat'] = True
+        if not attacker.combat_status['in_combat']:
+            attacker.combat_status['in_combat'] = True
+        if not defender.combat_status['in_combat']:
+            defender.combat_status['in_combat'] = True
 
         if defender.id not in attacker.combat_status['with']:
             attacker.combat_status['with'].append(defender.id)
@@ -42,6 +47,54 @@ class InteractionManager:
                 attacker.combat_status['human_involved'] = False
 
             self.Manager.EntityManager.markDeleted(defender.id)
+
+        # Emit details.
+        attacker_sid = attacker.getComp('type').get('sid')
+        defender_sid = defender.getComp('type').get('sid')
+
+        if attacker.getComp('type').get('type') == 'player':
+            self.Manager.sio.emit(
+                'combat update',
+                attacker.combat_status,
+                room=attacker_sid
+            )
+
+            self.Manager.sio.emit(
+                'player stats',
+                attacker.getComp('stats').toJSON(),
+                room=attacker_sid
+            )
+
+            self.Manager.sio.emit(
+                'damage',
+                {
+                    'type': 'given',
+                    'amount': attacker_damage
+                },
+                room=attacker_sid
+            )
+
+        if defender.getComp('type').get('type') == 'player':
+            self.Manager.sio.emit(
+                'combat update',
+                defender.combat_status,
+                room=defender_sid
+            )
+
+            self.Manager.sio.emit(
+                'player stats',
+                defender.getComp('stats').toJSON(),
+                room=defender_sid
+            )
+
+            self.Manager.sio.emit(
+                'damage',
+                {
+                    'type': 'taken',
+                    'amount': attacker_damage
+                },
+                room=defender_sid
+            )
 
         # Log the event.
         attacker_name = attacker.getComp('name').get('name')

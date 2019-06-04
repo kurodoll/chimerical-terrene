@@ -47,6 +47,19 @@ $(() => {
         game.scene.getScene('game').removeEntity(entity_id);
     });
 
+    socket.on('player stats', (details) => {
+        game.scene.getScene('gui').setPlayerStats(details);
+    });
+
+    socket.on('combat update', (details) => {
+        const level = game.scene.getScene('game').getLevel();
+        game.scene.getScene('gui').setCombatDetails(details, level);
+    });
+
+    socket.on('damage', (details) => {
+        game.scene.getScene('gui').showDamage(details);
+    });
+
     socket.on('monitor update', (update) => {
         console.log(new Date($.now()) + '\nMonitor Update (' + update.monitor + '):', update.data);
         game.scene.getScene('gui').monitorUpdate(update);

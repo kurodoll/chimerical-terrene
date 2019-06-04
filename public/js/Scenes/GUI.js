@@ -24,15 +24,22 @@ class SceneGUI extends Phaser.Scene {
         const ch = this.sys.game.canvas.height;
 
         // Combat details display.
+        this.strength = this.add.text(
+            20, ch - 20, '', {
+                fontFamily: 'Verdana',
+                fontSize: 10,
+                color: '#FFAA66'
+            }
+        );
         this.health_label = this.add.text(
-            20, ch - 20, 'Hit Points', {
+            100, ch - 20, 'Hit Points', {
                 fontFamily: 'Verdana',
                 fontSize: 10,
                 color: '#FF4444'
             }
         );
         this.health = this.add.text(
-            20, ch - 50, '', {
+            100, ch - 50, '', {
                 fontFamily: 'Verdana',
                 fontSize: 25,
                 color: '#FF8888'
@@ -111,7 +118,8 @@ class SceneGUI extends Phaser.Scene {
     }
 
     setPlayerStats(details) {
-        this.health.text = details.data.health;
+        this.health.text = details.data.health + '/' + details.data.health_max;
+        this.strength.text = 'Str ' + details.data.strength;
     }
 
     setCombatDetails(details, level) {

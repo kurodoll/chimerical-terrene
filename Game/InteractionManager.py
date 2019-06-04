@@ -1,4 +1,5 @@
 from log import log
+import random
 
 
 # Handles combat and stuff.
@@ -27,7 +28,7 @@ class InteractionManager:
             defender.combat_status['human_involved'] = True
 
         # Calculate damage.
-        attacker_damage = attacker.getComp('stats').get('attack_damage')
+        attacker_damage = self.getDamage(attacker, defender)
         defender_health = defender.getComp('stats').get('health')
 
         defender.getComp('stats').setValue(
@@ -105,3 +106,8 @@ class InteractionManager:
             msg += ' (KILL)'
 
         log('InteractionManager', msg, 'debug')
+
+    def getDamage(self, attacker, defender):
+        strength = attacker.getComp('stats').get('strength')
+        damage = random.randint(0, strength)
+        return damage

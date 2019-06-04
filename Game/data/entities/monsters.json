@@ -12,7 +12,8 @@
             },
             "stats": {
                 "health": 1,
-                "attack_damage": 1
+                "health_max": 1,
+                "strength": 1
             },
             "ai": {
                 "movement": "random",
@@ -34,8 +35,9 @@
                 "sprite": "floating paper"
             },
             "stats": {
-                "health": 2,
-                "attack_damage": 1
+                "health": 3,
+                "health_max": 3,
+                "strength": 1
             },
             "ai": {
                 "movement": "random",

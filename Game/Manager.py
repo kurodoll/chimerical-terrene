@@ -270,7 +270,8 @@ class Manager:
             'stats',
             {
                 'health': 10,
-                'attack_damage': 1
+                'health_max': 10,
+                'strength': 3
             }
         ))
 

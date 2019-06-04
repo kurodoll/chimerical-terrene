@@ -114,6 +114,12 @@ def get_present_level(sid):
 
     sio.emit('present level', level, room=sid)
 
+    sio.emit(
+        'player stats',
+        character.getComp('stats').toJSON(),
+        room=sid
+    )
+
     # Link the client to the level, so that they recieve updates to the level.
     GameManager.link(sid, on_level)
 

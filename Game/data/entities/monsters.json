@@ -9,6 +9,9 @@
             },
             "sprite": {
                 "sprite": "floating paper"
+            },
+            "ai": {
+                "movement": "random"
             }
         }
     }

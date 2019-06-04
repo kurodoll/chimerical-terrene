@@ -277,38 +277,41 @@ class SceneGame extends Phaser.Scene {
         return tiles;
     }
 
-    entityUpdate(entity) {
-        let exists = false;
+    entityUpdates(updates) {
+        for (let i = 0; i < updates.length; i++) {
+            const entity = updates[i];
+            let exists = false;
 
-        for (let i = 0; i < this.level.entities.length; i++) {
-            if (this.level.entities[i] && entity.id == this.level.entities[i].id) {
-                exists = true;
+            for (let i = 0; i < this.level.entities.length; i++) {
+                if (this.level.entities[i] && entity.id == this.level.entities[i].id) {
+                    exists = true;
 
-                // Check if the entity is being deleted.
-                if (entity.deleted) {
-                    if (this.level.entities[i].image) {
-                        this.level.entities[i].image.destroy();
-                    }
+                    // Check if the entity is being deleted.
+                    if (entity.deleted) {
+                        if (this.level.entities[i].image) {
+                            this.level.entities[i].image.destroy();
+                        }
 
-                    this.level.entities.splice(i, 1);
-                }
-                else {
-                    if (this.level.entities[i].image) {
-                        const image = this.level.entities[i].image;
-                        this.level.entities[i] = entity;
-                        this.level.entities[i].image = image;
+                        this.level.entities.splice(i, 1);
                     }
                     else {
-                        this.level.entities[i] = entity;
+                        if (this.level.entities[i].image) {
+                            const image = this.level.entities[i].image;
+                            this.level.entities[i] = entity;
+                            this.level.entities[i].image = image;
+                        }
+                        else {
+                            this.level.entities[i] = entity;
+                        }
                     }
+
+                    break;
                 }
-
-                break;
             }
-        }
 
-        if (!exists) {
-            this.level.entities.push(entity);
+            if (!exists) {
+                this.level.entities.push(entity);
+            }
         }
 
         this.renderSprites();

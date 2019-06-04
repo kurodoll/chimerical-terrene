@@ -39,8 +39,8 @@ $(() => {
         game.scene.getScene('game').setLevel(level);
     });
 
-    socket.on('entity update', (entity) => {
-        game.scene.getScene('game').entityUpdate(entity);
+    socket.on('entity updates', (entity) => {
+        game.scene.getScene('game').entityUpdates(entity);
     });
 
     socket.on('monitor update', (update) => {

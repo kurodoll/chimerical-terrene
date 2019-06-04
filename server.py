@@ -155,10 +155,15 @@ def disconnect(sid):
 def processTicks():
     while True:
         GameManager.processActions()
-        GameManager.WorldManager.updateEntities()
         GameManager.emitUpdates()
 
         sio.sleep(0.01)
+
+
+def updateEntities():
+    while True:
+        GameManager.WorldManager.updateEntities()
+        sio.sleep(2)
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -173,6 +178,7 @@ if __name__ == '__main__':
 
     # Start threads.
     sio.start_background_task(processTicks)
+    sio.start_background_task(updateEntities)
 
     # Start the server.
     log('server.py', f'Starting server on port {port}.')

@@ -1,4 +1,5 @@
 from log import log
+import random
 
 id_ = 0
 
@@ -19,6 +20,44 @@ class Entity:
         self.deleted = False
 
         log(f'Entity#{self.id}', 'Created.', 'debug')
+
+    # If the entity is a mob, this updates them (movement, etc.)
+    def updateMob(self, WorldManager):
+        if 'ai' in self.components:
+            movement = self.components['ai'].get('movement')
+
+            if movement == 'random':
+                x = self.getComp('position').get('x')
+                y = self.getComp('position').get('y')
+
+                adjacent_spots = [
+                    {'x': x - 1, 'y': y - 1},
+                    {'x': x, 'y': y - 1},
+                    {'x': x + 1, 'y': y - 1},
+                    {'x': x - 1, 'y': y},
+                    {'x': x + 1, 'y': y},
+                    {'x': x - 1, 'y': y + 1},
+                    {'x': x, 'y': y + 1},
+                    {'x': x + 1, 'y': y + 1}
+                ]
+
+                possible_spots = []
+
+                for a in adjacent_spots:
+                    if WorldManager.validMove(self.getComp('position').get('on_level'), a):  # noqa
+                        possible_spots.append(a)
+
+                WorldManager.Manager.queueAction(
+                    0,
+                    'move',
+                    {
+                        'entity': self.id,
+                        'coord': possible_spots[random.randint(
+                            0,
+                            len(possible_spots) - 1
+                        )]
+                    }
+                )
 
     # Adds a component to the entity. Only one component of each type can
     # exist.

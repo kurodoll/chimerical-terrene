@@ -81,6 +81,7 @@ class WorldManager:
         for l in self.levels:
             # Handle mobs.
             if self.levels[l].mobs:
+                # Spawn mobs.
                 for m in self.levels[l].mobs:
                     spawned = 0
 
@@ -96,6 +97,10 @@ class WorldManager:
                             entity,
                             self.Manager.ComponentManager
                         )
+
+                # Update mobs.
+                for e in self.levels[l].entities:
+                    e.updateMob(self)
 
     # Checks whether a tile can be moved to.
     def validMove(self, level_id, coords):

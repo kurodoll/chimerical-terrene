@@ -47,34 +47,39 @@ class Manager:
 
                 # Ensure that the entity is user controllable by the action
                 # taker.
-                if entity.getComp('user_controlled') and entity.getComp('user_controlled').get('owner') == action['sid']:  # noqa
-                    # Get the direction and try to move the entity.
-                    dir_ = action['details']['dir']
+                if action['sid'] == 0 or (entity.getComp('user_controlled') and entity.getComp('user_controlled').get('owner') == action['sid']):  # noqa
                     pos = entity.getComp('position')
 
                     old_x = pos.get('x')
                     old_y = pos.get('y')
 
-                    if dir_ == '1':
-                        pos.setValue('x', pos.get('x') - 1)
-                        pos.setValue('y', pos.get('y') + 1)
-                    elif dir_ == '2':
-                        pos.setValue('y', pos.get('y') + 1)
-                    elif dir_ == '3':
-                        pos.setValue('x', pos.get('x') + 1)
-                        pos.setValue('y', pos.get('y') + 1)
-                    elif dir_ == '4':
-                        pos.setValue('x', pos.get('x') - 1)
-                    elif dir_ == '6':
-                        pos.setValue('x', pos.get('x') + 1)
-                    elif dir_ == '7':
-                        pos.setValue('x', pos.get('x') - 1)
-                        pos.setValue('y', pos.get('y') - 1)
-                    elif dir_ == '8':
-                        pos.setValue('y', pos.get('y') - 1)
-                    elif dir_ == '9':
-                        pos.setValue('x', pos.get('x') + 1)
-                        pos.setValue('y', pos.get('y') - 1)
+                    if 'coord' in action['details']:
+                        pos.setValue('x', action['details']['coord']['x'])
+                        pos.setValue('y', action['details']['coord']['y'])
+                    else:
+                        # Get the direction and try to move the entity.
+                        dir_ = action['details']['dir']
+
+                        if dir_ == '1':
+                            pos.setValue('x', pos.get('x') - 1)
+                            pos.setValue('y', pos.get('y') + 1)
+                        elif dir_ == '2':
+                            pos.setValue('y', pos.get('y') + 1)
+                        elif dir_ == '3':
+                            pos.setValue('x', pos.get('x') + 1)
+                            pos.setValue('y', pos.get('y') + 1)
+                        elif dir_ == '4':
+                            pos.setValue('x', pos.get('x') - 1)
+                        elif dir_ == '6':
+                            pos.setValue('x', pos.get('x') + 1)
+                        elif dir_ == '7':
+                            pos.setValue('x', pos.get('x') - 1)
+                            pos.setValue('y', pos.get('y') - 1)
+                        elif dir_ == '8':
+                            pos.setValue('y', pos.get('y') - 1)
+                        elif dir_ == '9':
+                            pos.setValue('x', pos.get('x') + 1)
+                            pos.setValue('y', pos.get('y') - 1)
 
                     if not self.WorldManager.validMove(pos.get('on_level'), {
                         'x': pos.get('x'),
@@ -98,6 +103,9 @@ class Manager:
         changes = self.EntityManager.getChanged()
         self.EntityManager.resetChanged()
 
+        # List of updates to submit to each client.
+        to_emit = {}
+
         for c in changes:
             ent = self.EntityManager.get(c)
             pos = ent.getComp('position')
@@ -107,10 +115,17 @@ class Manager:
 
                 if level_id in self.links:
                     for sid in self.links[level_id]:
-                        self.sio.emit('entity update', ent.toJSON(), room=sid)
+                        if sid not in to_emit:
+                            to_emit[sid] = []
+
+                        to_emit[sid].append(ent.toJSON())
 
             if ent.deleted:
                 self.EntityManager.delete(c)
+
+        # Emit the updates.
+        for sid in to_emit:
+            self.sio.emit('entity updates', to_emit[sid], room=sid)
 
     # Creates a new player character entity based on initial details.
     def newCharacter(self, details, sid):

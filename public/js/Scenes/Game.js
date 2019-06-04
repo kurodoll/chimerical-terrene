@@ -186,6 +186,30 @@ class SceneGame extends Phaser.Scene {
                 }
             }
         }
+
+        // Hide entities that are out of sight.
+        for (let i = 0; i < this.level.entities.length; i++) {
+            if (this.level.entities[i].image) {
+                if (this.level.entities[i].components.position) {
+                    const x = this.level.entities[i].components.position.data.x;
+                    const y = this.level.entities[i].components.position.data.y;
+
+                    if (this.layer.getTileAt(x, y).tint != 0xFFFFFF) {
+                        this.level.entities[i].image.visible = false;
+                    }
+                    else {
+                        const distance = Math.sqrt(
+                            Math.pow(Math.abs(x - from_pos.x), 2) + Math.pow(Math.abs(y - from_pos.y), 2)
+                        );
+
+                        const brightness = 1 / (distance / 5);
+
+                        this.level.entities[i].image.visible = true;
+                        this.level.entities[i].image.setAlpha(brightness);
+                    }
+                }
+            }
+        }
     }
 
     // Returns a list of tiles that intersect a line from point A to B.

@@ -21,6 +21,7 @@ class Level:
         self.tileset = level_data['tileset']
 
         self.entities = []
+        self.mobs = level_data['mobs']
 
         # If the level has a generator field, the level itself needs to be
         # procedurally generated.
@@ -31,6 +32,11 @@ class Level:
             )
 
         log(f'Level:{self.id}', f'Loaded level.')
+
+        self.valid_movements = [
+            'ground', 'ground_rough',
+            'grass'
+        ]
 
     def generateLevel(self, generator, tile_weights):
         log(
@@ -116,6 +122,19 @@ class Level:
 
             self.tiles[spawn_tile['y'] * self.width + spawn_tile['x']].addAttribute('spawn_tile')  # noqa
 
+    def getRandomClearTile(self):
+        clear_tiles = []
+
+        for x in range(0, self.width):
+            for y in range(0, self.height):
+                t = self.tiles[y * self.width + x]
+
+                if t.type in self.valid_movements:
+                    clear_tiles.append({'x': x, 'y': y})
+
+        index = random.randint(0, len(clear_tiles))
+        return clear_tiles[index]
+
     def getAdjacentTiles(self, x, y):
         adjacent = []
         coords = [
@@ -142,6 +161,22 @@ class Level:
 
     def addEntity(self, entity):
         self.entities.append(entity)
+
+    # Given a mob entity, give it a position component and spawn it.
+    def spawnMob(self, entity, ComponentManager):
+        spawn_at = self.getRandomClearTile()
+
+        position_comp = ComponentManager.new(
+            entity,
+            'position',
+            {
+                'x': spawn_at['x'],
+                'y': spawn_at['y'],
+                'on_level': self.id
+            }
+        )
+
+        entity.addComponent(position_comp)
 
     def delEntity(self, entity_id):
         for i in range(0, len(self.entities)):

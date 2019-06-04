@@ -76,6 +76,27 @@ class WorldManager:
             self.levels[id_] = Level.Level(level_data)
             return self.levels[id_]
 
+    # Updates all entities, such as spawning and moving mobs.
+    def updateEntities(self):
+        for l in self.levels:
+            # Handle mobs.
+            if self.levels[l].mobs:
+                for m in self.levels[l].mobs:
+                    spawned = 0
+
+                    for e in self.levels[l].entities:
+                        if e.getComp('type'):
+                            if e.getComp('type').data['type'] == m['type']:
+                                spawned += 1
+
+                    if spawned < m['max_n']:
+                        entity = self.Manager.EntityManager.new(m['type'])
+
+                        self.levels[l].spawnMob(
+                            entity,
+                            self.Manager.ComponentManager
+                        )
+
     # Checks whether a tile can be moved to.
     def validMove(self, level_id, coords):
         x = coords['x']

@@ -9,6 +9,7 @@ class SceneGame extends Phaser.Scene {
         this.load.json('tileset cave data', '/data/tilesets/cave');
 
         this.load.image('player', '/graphics/sprites/player');
+        this.load.image('floating paper', '/graphics/sprites/floating_paper');
     }
 
     create() {
@@ -83,15 +84,14 @@ class SceneGame extends Phaser.Scene {
     }
 
     renderSprites() {
+        let player_ent;
+
         for (let i = 0; i < this.level.entities.length; i++) {
             if ('sprite' in this.level.entities[i].components) {
                 const ent = this.level.entities[i];
 
                 if (ent.components.user_controlled && ent.components.user_controlled.data.owner == client_sid) {
-                    this.determineSight({
-                        x: ent.components.position.data.x,
-                        y: ent.components.position.data.y
-                    });
+                    player_ent = ent;
                 }
 
                 const pos_x = ent.components.position.data.x * this.level.tile_width;
@@ -123,15 +123,18 @@ class SceneGame extends Phaser.Scene {
                             pos_y,
                             ent.components.sprite.data.sprite
                         ).setOrigin(0, 0);
-
-                    // If this sprite is the player character of this client, have the camera follow it.
-                    if (ent.components.user_controlled && ent.components.user_controlled.data.owner == client_sid) {
-                        this.controlling_entity = ent;
-                        this.cameras.main.startFollow(ent.image, true, 0.09, 0.09);
-                    }
                 }
             }
         }
+
+        // Update LOS and camera for player.
+        this.determineSight({
+            x: player_ent.components.position.data.x,
+            y: player_ent.components.position.data.y
+        });
+
+        this.controlling_entity = player_ent;
+        this.cameras.main.startFollow(player_ent.image, true, 0.09, 0.09);
     }
 
     // Determines which tiles are visible and which are not.

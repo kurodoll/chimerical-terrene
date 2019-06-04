@@ -1,0 +1,15 @@
+{
+    "floating paper": {
+        "components": {
+            "type": {
+                "type": "monsters:floating paper"
+            },
+            "name": {
+                "name": "Floating Paper"
+            },
+            "sprite": {
+                "sprite": "floating paper"
+            }
+        }
+    }
+}

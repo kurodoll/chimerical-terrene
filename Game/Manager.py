@@ -10,10 +10,13 @@ class Manager:
         self.config = {
             'files': {
                 'static_files': 'config/static_files.json',
-                'defined_levels': 'Game/data/world/defined_levels.json'
+                'defined_levels': 'Game/data/world/defined_levels.json',
             },
             'server': {
                 'default_port': 3000
+            },
+            'entity_data': {
+                'monsters': 'Game/data/entities/monsters.json'
             }
         }
 
@@ -145,7 +148,6 @@ class Manager:
             }
         ))
 
-        self.EntityManager.markChanged(character.id)
         return character
 
     # Set up a monitor for some data in the game, that will be sent to the

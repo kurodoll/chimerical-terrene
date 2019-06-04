@@ -1,6 +1,8 @@
 from log import log
 from . import Entity
 
+import json
+
 
 # Manages all entities in the game world.
 class EntityManager:
@@ -9,12 +11,35 @@ class EntityManager:
         self.entities = {}
         self.changed = []
 
+        # Load preset data from file.
+        self.presets = {
+            'monsters': json.load(
+                open(Manager.config['entity_data']['monsters'], 'r')
+            )
+        }
+
         log('EntityManager', 'Initialized.')
 
     # Creates a blank new entity and returns it.
-    def new(self):
+    def new(self, preset=None):
         entity = Entity.Entity()
         self.entities[entity.id] = entity
+
+        # If given a preset, set up its components.
+        if preset:
+            category = preset.split(':')[0]
+            type_ = preset.split(':')[1]
+
+            preset = self.presets[category][type_]
+
+            for c in preset['components']:
+                comp = self.Manager.ComponentManager.new(
+                    entity,
+                    c,
+                    preset['components'][c]
+                )
+
+                entity.addComponent(comp)
 
         if 'EntityManager' in self.Manager.monitors:
             for sid in self.Manager.monitors['EntityManager']:
@@ -25,6 +50,7 @@ class EntityManager:
                     }
                 }, room=sid)
 
+        self.markChanged(entity.id)
         return entity
 
     # Marks an entity as changed.

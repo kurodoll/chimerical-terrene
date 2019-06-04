@@ -155,6 +155,7 @@ def disconnect(sid):
 def processTicks():
     while True:
         GameManager.processActions()
+        GameManager.WorldManager.updateEntities()
         GameManager.emitUpdates()
 
         sio.sleep(0.01)

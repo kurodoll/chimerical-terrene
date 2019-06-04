@@ -39,7 +39,7 @@ class Manager:
             'details': details
         })
 
-    # Process the next action in the queue.
+    # Process the queue.
     def processActions(self):
         while len(self.action_queue):
             action = self.action_queue.pop(0)
@@ -115,10 +115,10 @@ class Manager:
                 # making this move.
                 if entity.combat_status['in_combat'] and entity.getComp('type').get('type') == 'player':  # noqa
                     for e in entity.combat_status['with']:
-                        self.EntityManager.get(e).updateMob(
-                            self.WorldManager,
-                            True
-                        )
+                        ent = self.EntityManager.get(e)
+
+                        if ent:
+                            ent.updateMob(self.WorldManager, True)
 
             # If an entity goes down some stairs, we have to change the level
             # they're on.

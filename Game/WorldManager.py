@@ -102,6 +102,7 @@ class WorldManager:
                 # Update mobs.
                 for e in self.levels[l].entities:
                     e.updateMob(self)
+                    self.Manager.processActions()
 
     # Checks whether a tile can be moved to.
     def validMove(self, level_id, coords, ignore=None):

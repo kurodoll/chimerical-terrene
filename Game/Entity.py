@@ -75,7 +75,7 @@ class Entity:
                                 # But disallow attack if the target is already
                                 # in combat.
                                 if (not res.combat_status['in_combat']) or (res.id in self.combat_status['with']):  # noqa
-                                    if (res.getComp('type').get('type') == 'player') or self.getComp('ai')['attacks_mobs']:  # noqa
+                                    if (res.getComp('type').get('type') == 'player') or self.getComp('ai').get('attacks_mobs'):  # noqa
                                         a['attacking'] = res
                                         possible_spots.append(a)
 

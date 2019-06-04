@@ -62,7 +62,8 @@ class EntityManager:
             self.markChanged(entity_id)
 
     def get(self, entity_id):
-        return self.entities[entity_id]
+        if entity_id in self.entities:
+            return self.entities[entity_id]
 
     def getChanged(self):
         return self.changed

@@ -3,5 +3,6 @@
     "ground": 1,
     "ground_rough": 2,
     "grass": 3,
-    "wall": 4
+    "wall": 4,
+    "stairs down": 5
 }

@@ -30,11 +30,33 @@ class SceneGame extends Phaser.Scene {
                         }
                     );
                 }
+
+                // Stair interaction.
+                else if (e.key == '>') {
+                    socket.emit(
+                        'action',
+                        'stairs down',
+                        {
+                            'entity': this.controlling_entity.id
+                        }
+                    );
+                }
             }
         });
     }
 
     setLevel(level) {
+        // Remove previous level data.
+        if (this.level) {
+            this.layer.destroy();
+
+            for (let i = 0; i < this.level.entities.length; i++) {
+                if (this.level.entities[i].image) {
+                    this.level.entities[i].image.destroy();
+                }
+            }
+        }
+
         this.level = level;
 
         // Create a map of tiles to be rendered.
@@ -315,5 +337,18 @@ class SceneGame extends Phaser.Scene {
         }
 
         this.renderSprites();
+    }
+
+    removeEntity(entity_id) {
+        for (let i = 0; i < this.level.entities.length; i++) {
+            if (this.level.entities[i] && entity_id == this.level.entities[i].id) {
+                if (this.level.entities[i].image) {
+                    this.level.entities[i].image.destroy();
+                }
+
+                this.level.entities.splice(i, 1);
+                return;
+            }
+        }
     }
 }

@@ -1,0 +1,19 @@
+{
+    "id": "beginner_dungeon_1",
+    "name": "Beginner Dungeon 1",
+
+    "width": 30,
+    "height": 30,
+
+    "tile_width": 15,
+    "tile_height": 15,
+    "zoom": 2,
+
+    "tileset": "cave",
+    "generator": "cave",
+    "tile_weights": {
+        "ground": 90,
+        "ground_rough": 95,
+        "grass": 100
+    }
+}

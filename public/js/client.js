@@ -43,6 +43,10 @@ $(() => {
         game.scene.getScene('game').entityUpdates(entity);
     });
 
+    socket.on('remove entity', (entity_id) => {
+        game.scene.getScene('game').removeEntity(entity_id);
+    });
+
     socket.on('monitor update', (update) => {
         console.log(new Date($.now()) + '\nMonitor Update (' + update.monitor + '):', update.data);
         game.scene.getScene('gui').monitorUpdate(update);

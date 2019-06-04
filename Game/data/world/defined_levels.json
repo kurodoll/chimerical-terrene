@@ -1,3 +1,4 @@
 {
-    "starting_area": "Game/data/levels/starting_area.json"
+    "starting_area": "Game/data/levels/starting_area.json",
+    "beginner_dungeon_1": "Game/data/levels/bd1.json"
 }

@@ -17,6 +17,12 @@
         "grass": 100
     },
 
+    "elements": {
+        "stairs down": {
+            "target": "beginner_dungeon_1"
+        }
+    },
+
     "mobs": [
         {
             "type": "monsters:floating paper",

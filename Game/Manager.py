@@ -90,6 +90,50 @@ class Manager:
                     else:
                         self.EntityManager.markChanged(entity.id)
 
+            # If an entity goes down some stairs, we have to change the level
+            # they're on.
+            elif action['type'] == 'stairs down':
+                # Get the entity that is trying to be moved.
+                entity = self.EntityManager.get(action['details']['entity'])
+
+                # Ensure that the entity is user controllable by the action
+                # taker.
+                if action['sid'] == 0 or (entity.getComp('user_controlled') and entity.getComp('user_controlled').get('owner') == action['sid']):  # noqa
+                    pos = entity.getComp('position')
+                    level = self.WorldManager.getLevel(pos.get('on_level'))
+
+                    if 'stairs_down' in level.getTile(pos.get('x'), pos.get('y')).attributes and 'stairs down' in level.elements:  # noqa
+                        target = level.elements['stairs down']['target']
+
+                        if action['sid']:
+                            self.unlink(action['sid'], pos.get('on_level'))
+
+                            new_level = self.WorldManager.getLevelJSON(target)
+                            self.sio.emit(
+                                'present level',
+                                new_level,
+                                room=action['sid']
+                            )
+
+                            self.link(action['sid'], target)
+
+                        new_level = self.WorldManager.getLevel(target)
+
+                        pos.setValue('on_level', target)
+                        pos.setValue('x', new_level.elements['spawn_tile']['x'])  # noqa
+                        pos.setValue('y', new_level.elements['spawn_tile']['y'])  # noqa
+
+                        new_level.addEntity(entity)
+                        self.EntityManager.markChanged(entity.id)
+
+                        # Tell players remaining on the level to remove the
+                        # player entity of the character who has left.
+                        self.emitToLinked(
+                            level.id,
+                            'remove entity',
+                            entity.id
+                        )
+
     # Link a client to a level, meaning they will be sent any changes made to
     # the level.
     def link(self, sid, level_id):
@@ -97,6 +141,16 @@ class Manager:
             self.links[level_id].append(sid)
         else:
             self.links[level_id] = [sid]
+
+    def unlink(self, sid, level_id):
+        if level_id in self.links:
+            self.links[level_id].remove(sid)
+
+    # Emits a message to the clients linked to the given world ID.
+    def emitToLinked(self, level_id, msg, data):
+        if level_id in self.links:
+            for sid in self.links[level_id]:
+                self.sio.emit(msg, data, room=sid)
 
     # Send out all entity changes to clients.
     def emitUpdates(self):

@@ -20,8 +20,17 @@ class Level:
 
         self.tileset = level_data['tileset']
 
+        if 'elements' in level_data:
+            self.elements = level_data['elements']
+        else:
+            self.elements = {}
+
         self.entities = []
-        self.mobs = level_data['mobs']
+
+        if 'mobs' in level_data:
+            self.mobs = level_data['mobs']
+        else:
+            self.mobs = {}
 
         # If the level has a generator field, the level itself needs to be
         # procedurally generated.
@@ -35,7 +44,8 @@ class Level:
 
         self.valid_movements = [
             'ground', 'ground_rough',
-            'grass'
+            'grass',
+            'stairs down'
         ]
 
     def generateLevel(self, generator, tile_weights):
@@ -116,11 +126,18 @@ class Level:
             spawn_tile_index = random.randint(0, len(open_tiles) - 1)
             spawn_tile = open_tiles[spawn_tile_index]
 
-            self.elements = {
-                'spawn_tile': spawn_tile
-            }
-
+            self.elements['spawn_tile'] = spawn_tile
             self.tiles[spawn_tile['y'] * self.width + spawn_tile['x']].addAttribute('spawn_tile')  # noqa
+
+            # Place stairs down somewhere.
+            stairs_index = random.randint(0, len(open_tiles) - 1)
+            stairs = open_tiles[stairs_index]
+
+            self.getTile(stairs['x'], stairs['y']).type = 'stairs down'
+            self.getTile(stairs['x'], stairs['y']).addAttribute('stairs_down')
+
+    def getTile(self, x, y):
+        return self.tiles[y * self.width + x]
 
     def getRandomClearTile(self):
         clear_tiles = []

@@ -28,7 +28,8 @@ class WorldManager:
 
         self.valid_movements = [
             'ground', 'ground_rough',
-            'grass'
+            'grass',
+            'stairs down'
         ]
 
         log('WorldManager', 'Initialized.')

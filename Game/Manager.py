@@ -92,23 +92,33 @@ class Manager:
                     if res == 'valid':
                         self.EntityManager.markChanged(entity.id)
                     else:
-                        # Reset the position of the entity back to where it
-                        # was.
-                        pos.setValue('x', old_x)
-                        pos.setValue('y', old_y)
+                        reset_pos = True
 
                         # If moving onto an entity, attack it.
                         if isinstance(res, Entity.Entity):
-                            # But disallow this if it's already in combat.
-                            if (not res.combat_status['in_combat']) or (entity.id in res.combat_status['with']):  # noqa
-                                self.queueAction(
-                                    action['sid'],
-                                    'attack',
-                                    {
-                                        'attacker': entity,
-                                        'defender': res
-                                    }
-                                )
+                            # If the entity has no aggression, it can move
+                            # onto any entity.
+                            if entity.getComp('ai') and entity.getComp('ai').get('aggression') == 'none':  # noqa
+                                reset_pos = False
+                                self.EntityManager.markChanged(entity.id)
+
+                            else:
+                                # But disallow this if it's already in combat.
+                                if (not res.combat_status['in_combat']) or (entity.id in res.combat_status['with']):  # noqa
+                                    self.queueAction(
+                                        action['sid'],
+                                        'attack',
+                                        {
+                                            'attacker': entity,
+                                            'defender': res
+                                        }
+                                    )
+
+                        if reset_pos:
+                            # Reset the position of the entity back to where it
+                            # was.
+                            pos.setValue('x', old_x)
+                            pos.setValue('y', old_y)
 
                 # If the entity is in combat, its combatants get to make a
                 # move now. But this should only happen when it's a player

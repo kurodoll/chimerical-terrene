@@ -17,9 +17,9 @@ class Component:
         self.id = nextID()
         self.parent = parent
         self.type = type_
-        self.data = data
+        self.data = data.copy()
 
-        log(f'Component#{self.id}', f'Created (type {self.type}).', 'debug')
+        log(f'Component#{self.id}', f'Created (type {self.type}).', 'debug(2)')
 
     def setValue(self, data_name, value):
         self.data[data_name] = value

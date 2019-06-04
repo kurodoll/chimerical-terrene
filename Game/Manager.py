@@ -1,6 +1,8 @@
 from . import EntityManager
 from . import ComponentManager
 from . import WorldManager
+from . import InteractionManager
+from . import Entity
 
 
 class Manager:
@@ -23,6 +25,7 @@ class Manager:
         self.EntityManager = EntityManager.EntityManager(self)
         self.ComponentManager = ComponentManager.ComponentManager(self)
         self.WorldManager = WorldManager.WorldManager(self)
+        self.InteractionManager = InteractionManager.InteractionManager(self)
 
         self.action_queue = []
         self.links = {}
@@ -81,14 +84,41 @@ class Manager:
                             pos.setValue('x', pos.get('x') + 1)
                             pos.setValue('y', pos.get('y') - 1)
 
-                    if not self.WorldManager.validMove(pos.get('on_level'), {
+                    res = self.WorldManager.validMove(pos.get('on_level'), {
                         'x': pos.get('x'),
                         'y': pos.get('y')
-                    }):
+                    }, entity.id)
+
+                    if res == 'valid':
+                        self.EntityManager.markChanged(entity.id)
+                    else:
+                        # Reset the position of the entity back to where it
+                        # was.
                         pos.setValue('x', old_x)
                         pos.setValue('y', old_y)
-                    else:
-                        self.EntityManager.markChanged(entity.id)
+
+                        # If moving onto an entity, attack it.
+                        if isinstance(res, Entity.Entity):
+                            # But disallow this if it's already in combat.
+                            if (not res.combat_status['in_combat']) or (entity.id in res.combat_status['with']):  # noqa
+                                self.queueAction(
+                                    action['sid'],
+                                    'attack',
+                                    {
+                                        'attacker': entity,
+                                        'defender': res
+                                    }
+                                )
+
+                # If the entity is in combat, its combatants get to make a
+                # move now. But this should only happen when it's a player
+                # making this move.
+                if entity.combat_status['in_combat'] and entity.getComp('type').get('type') == 'player':  # noqa
+                    for e in entity.combat_status['with']:
+                        self.EntityManager.get(e).updateMob(
+                            self.WorldManager,
+                            True
+                        )
 
             # If an entity goes down some stairs, we have to change the level
             # they're on.
@@ -133,6 +163,12 @@ class Manager:
                             'remove entity',
                             entity.id
                         )
+
+            elif action['type'] == 'attack':
+                self.InteractionManager.attack(
+                    action['details']['attacker'],
+                    action['details']['defender']
+                )
 
     # Link a client to a level, meaning they will be sent any changes made to
     # the level.
@@ -185,6 +221,15 @@ class Manager:
     def newCharacter(self, details, sid):
         character = self.EntityManager.new()
 
+        # Give the entity the type "player".
+        character.addComponent(self.ComponentManager.new(
+            character,
+            'type',
+            {
+                'type': 'player'
+            }
+        ))
+
         # Give the entity the character's name.
         character.addComponent(self.ComponentManager.new(
             character,
@@ -205,6 +250,16 @@ class Manager:
             'sprite',
             {
                 'sprite': 'player'
+            }
+        ))
+
+        # Give the entity stats.
+        character.addComponent(self.ComponentManager.new(
+            character,
+            'stats',
+            {
+                'health': 10,
+                'attack_damage': 1
             }
         ))
 

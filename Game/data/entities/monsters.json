@@ -10,8 +10,37 @@
             "sprite": {
                 "sprite": "floating paper"
             },
+            "stats": {
+                "health": 1,
+                "attack_damage": 1
+            },
             "ai": {
-                "movement": "random"
+                "movement": "random",
+                "aggression": "none",
+                "attacks_mobs": false
+            }
+        }
+    },
+
+    "floating paper (strange)": {
+        "components": {
+            "type": {
+                "type": "monsters:floating paper (strange)"
+            },
+            "name": {
+                "name": "Floating Paper (Strange)"
+            },
+            "sprite": {
+                "sprite": "floating paper"
+            },
+            "stats": {
+                "health": 2,
+                "attack_damage": 1
+            },
+            "ai": {
+                "movement": "random",
+                "aggression": "passive-aggressive",
+                "attacks_mobs": false
             }
         }
     }

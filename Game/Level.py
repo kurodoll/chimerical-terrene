@@ -149,7 +149,7 @@ class Level:
                 if t.type in self.valid_movements:
                     clear_tiles.append({'x': x, 'y': y})
 
-        index = random.randint(0, len(clear_tiles))
+        index = random.randint(0, len(clear_tiles) - 1)
         return clear_tiles[index]
 
     def getAdjacentTiles(self, x, y):

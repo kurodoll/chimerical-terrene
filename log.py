@@ -6,6 +6,9 @@ init()  # colorama
 Manager = None
 last_msgs = []
 
+log_levels = [ 'debug(2)', 'debug (network)', 'debug', 'log', 'warning', 'error', 'fatal error' ]  # noqa
+log_level = 1
+
 
 def logSetVars(Manager_):
     global Manager
@@ -13,6 +16,10 @@ def logSetVars(Manager_):
 
 
 def log(caller, message, level='log'):
+    log_level_index = log_levels.index(level)
+    if log_level_index < log_level:
+        return
+
     # Print the current date & time.
     now = datetime.datetime.now()
     print(f'{Fore.BLACK}{Style.BRIGHT}{now}{Style.RESET_ALL}', end=' ')
@@ -27,6 +34,8 @@ def log(caller, message, level='log'):
     elif level == 'log':
         print(f'[{Fore.GREEN}', end='')
     elif level == 'debug':
+        print(f'[{Fore.CYAN}', end='')
+    elif level == 'debug(2)':
         print(f'[{Fore.CYAN}', end='')
     elif level == 'debug (network)':
         print(f'[{Fore.BLUE}', end='')

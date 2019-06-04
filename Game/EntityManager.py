@@ -33,13 +33,11 @@ class EntityManager:
             preset = self.presets[category][type_]
 
             for c in preset['components']:
-                comp = self.Manager.ComponentManager.new(
+                entity.addComponent(self.Manager.ComponentManager.new(
                     entity,
                     c,
                     preset['components'][c]
-                )
-
-                entity.addComponent(comp)
+                ))
 
         if 'EntityManager' in self.Manager.monitors:
             for sid in self.Manager.monitors['EntityManager']:
@@ -78,4 +76,4 @@ class EntityManager:
         for l in self.Manager.WorldManager.levels:
             self.Manager.WorldManager.levels[l].delEntity(entity_id)
 
-        log('EntityManager', f'Deleted entity#{entity_id}', 'debug')
+        log('EntityManager', f'Deleted entity#{entity_id}', 'debug(2)')

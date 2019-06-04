@@ -104,7 +104,7 @@ class WorldManager:
                     e.updateMob(self)
 
     # Checks whether a tile can be moved to.
-    def validMove(self, level_id, coords):
+    def validMove(self, level_id, coords, ignore=None):
         x = coords['x']
         y = coords['y']
         w = self.levels[level_id].width
@@ -116,7 +116,18 @@ class WorldManager:
         tile = self.levels[level_id].tiles[y * w + x]
 
         if tile.type in self.valid_movements:
-            return True
+            # Check for entities on the tile.
+            for e in self.levels[level_id].entities:
+                pos = e.getComp('position')
+
+                if x == pos.data['x'] and y == pos.data['y'] and e.id != ignore:  # noqa
+                    # Check whether the entity lets us move onto its tile.
+                    if e.getComp('ai') and e.getComp('ai').get('aggression') == 'none':  # noqa
+                        return 'valid'
+                    else:
+                        return e
+
+            return 'valid'
 
         return False
 

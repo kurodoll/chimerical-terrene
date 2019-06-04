@@ -19,10 +19,22 @@ class Entity:
         self.components = {}
         self.deleted = False
 
-        log(f'Entity#{self.id}', 'Created.', 'debug')
+        self.combat_status = {
+            'in_combat': False,
+            'with': [],
+            'human_involved': False
+        }
+
+        log(f'Entity#{self.id}', 'Created.', 'debug(2)')
 
     # If the entity is a mob, this updates them (movement, etc.)
-    def updateMob(self, WorldManager):
+    def updateMob(self, WorldManager, force_move=False):
+        if self.deleted:
+            return
+
+        if self.combat_status['in_combat'] and self.combat_status['human_involved'] and not force_move:  # noqa
+            return
+
         if 'ai' in self.components:
             movement = self.components['ai'].get('movement')
 
@@ -44,20 +56,54 @@ class Entity:
                 possible_spots = []
 
                 for a in adjacent_spots:
-                    if WorldManager.validMove(self.getComp('position').get('on_level'), a):  # noqa
-                        possible_spots.append(a)
+                    res = WorldManager.validMove(self.getComp('position').get('on_level'), a)  # noqa
 
-                WorldManager.Manager.queueAction(
-                    0,
-                    'move',
-                    {
-                        'entity': self.id,
-                        'coord': possible_spots[random.randint(
+                    if res == 'valid':
+                        possible_spots.append(a)
+                    elif isinstance(res, Entity):
+                        if self.getComp('ai'):
+                            aggression = self.getComp('ai').get('aggression')
+
+                            # If this entity is not aggressive, let it move
+                            # onto the tile of another entity.
+                            if aggression == 'none':
+                                possible_spots.append(a)
+
+                            # If this entity IS aggressive, have it attack when
+                            # it moves onto another entity.
+                            elif aggression == 'passive-aggressive':
+                                # But disallow attack if the target is already
+                                # in combat.
+                                if (not res.combat_status['in_combat']) or (res.id in self.combat_status['with']):  # noqa
+                                    if (res.getComp('type').get('type') == 'player') or self.getComp('ai')['attacks_mobs']:  # noqa
+                                        a['attacking'] = res
+                                        possible_spots.append(a)
+
+                if len(possible_spots):
+                    move_to = possible_spots[random.randint(
+                        0,
+                        len(possible_spots) - 1
+                    )]
+
+                    if 'attacking' in move_to:
+                        WorldManager.Manager.queueAction(
                             0,
-                            len(possible_spots) - 1
-                        )]
-                    }
-                )
+                            'attack',
+                            {
+                                'attacker': self,
+                                'defender': move_to['attacking']
+                            }
+                        )
+
+                    else:
+                        WorldManager.Manager.queueAction(
+                            0,
+                            'move',
+                            {
+                                'entity': self.id,
+                                'coord': move_to
+                            }
+                        )
 
     # Adds a component to the entity. Only one component of each type can
     # exist.
@@ -67,7 +113,7 @@ class Entity:
         log(
             f'Entity#{self.id}',
             f'Component of type {component.type} added.',
-            'debug'
+            'debug(2)'
         )
 
     def getComp(self, type_):

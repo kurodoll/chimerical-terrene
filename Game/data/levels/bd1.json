@@ -15,5 +15,12 @@
         "ground": 90,
         "ground_rough": 95,
         "grass": 100
-    }
+    },
+
+    "mobs": [
+        {
+            "type": "monsters:floating paper (strange)",
+            "max_n": 10
+        }
+    ]
 }
